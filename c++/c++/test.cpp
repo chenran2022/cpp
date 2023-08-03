@@ -306,9 +306,156 @@ using namespace std;
 //	return 0;
 //}
 
+//类的声明与定义
 
-int main()
-{
+//class Point
+//{
+//public:
+//	void SetPoint(int x, int y)
+//	{
+//		p_x = x;
+//		p_y = y;
+//	}
+//	int GetPoint_x()
+//	{
+//		return p_x;
+//	}
+//	int GetPoint_y()
+//	{
+//		return	p_y;
+//	}
+//private:
+//	int p_x;
+//	int p_y;
+//};
+//
+//class Circle
+//{
+//public:
+//	void SetCircle_r(int r)
+//	{
+//		m_r = r;
+//	}
+//	int GetCircle_r()
+//	{
+//		return m_r;
+//	}
+//	void SetCenter(Point Center)
+//	{
+//		m_Center = Center;
+//	}
+//	Point GetCenter()
+//	{
+//		return m_Center;
+//	}
+//private:
+//	int m_r;
+//	Point m_Center;//圆心
+//};
 
-	return 0;
-}
+//类的声明与定义
+//#include"test.h"
+//void Point::SetPoint(int x, int y)
+//{
+//	p_x = x;
+//	p_y = y;
+//}
+//int Point::GetPoint_x()
+//{
+//	return p_x;
+//}
+//int Point::GetPoint_y()
+//{
+//	return	p_y;
+//}
+//
+//
+//void Circle::SetCircle_r(int r)
+//{
+//	m_r = r;
+//}
+//int Circle::GetCircle_r()
+//{
+//	return m_r;
+//}
+//void Circle::SetCenter(Point Center)
+//{
+//	m_Center = Center;
+//}
+//Point Circle::GetCenter()
+//{
+//	return m_Center;
+//}
+//void P_C(Point &p,Circle& c)
+//{
+//	if ((p.GetPoint_x() - c.GetCenter().GetPoint_x()) * (p.GetPoint_x() - c.GetCenter().GetPoint_x())
+//		+ (p.GetPoint_y() - c.GetCenter().GetPoint_y()) * (p.GetPoint_y() - c.GetCenter().GetPoint_y())
+//		== c.GetCircle_r() * c.GetCircle_r())
+//	{
+//		cout << "点在圆上"<<endl;
+//	}
+//	else if ((p.GetPoint_x() - c.GetCenter().GetPoint_x()) * (p.GetPoint_x() - c.GetCenter().GetPoint_x())
+//		+ (p.GetPoint_y() - c.GetCenter().GetPoint_y()) * (p.GetPoint_y() - c.GetCenter().GetPoint_y())
+//		> c.GetCircle_r() * c.GetCircle_r())
+//	{
+//		cout << "点在圆外"<<endl;
+//	}
+//	else
+//		cout << "点在圆内"<<endl;
+//}
+//
+//int main()
+//{
+//	Point p;
+//	p.SetPoint(10, 10);
+//
+//	Point c;
+//	c.SetPoint(0, 0);
+//
+//	Circle C1;
+//	C1.SetCenter(c);
+//	int r = 10;
+//	C1.SetCircle_r(r);
+//
+//	P_C(p, C1);
+//	return 0;
+//}
+
+
+//对象的初始化和清理
+
+//构造函数：创建对象时为对象的成员赋值，构造函数由编译器自动调用，无需手动调用
+//析构函数:	对象销毁前系统自动调用，无需手动调用
+
+//class Person
+//{
+//public:
+//	//构造函数：
+//		/*	语法：类名(){}
+//			没有返回值也不写void
+//			函数名称和类名相同
+//			构造函数可以有参数，所以可以发生重载
+//			程序在调用对象时自动调用构造函数，无需手动调用，且只会调用一次*/
+//	Person()
+//	{
+//		cout << "构造函数" << endl;
+//	}
+//	//析构函数：
+//			/*	语法：~类名(){}
+//			没有返回值也不写void
+//			函数名称和类名相同，在名称前加上符号~
+//			构造函数不可以有参数，所以不可以发生重载
+//			程序在对象销毁前自动调用构造函数，无需手动调用，且只会调用一次*/
+//	~Person()
+//	{
+//		cout << "析构函数" << endl;
+//	}
+//	//注意：构造和析构都是必须有的实现，如果我们自己不提供，编译器会提供一个空实现的构造和析构
+//};
+//int main()
+//{
+//
+//	Person P;
+//	system("pause");
+//	return 0;
+//}
