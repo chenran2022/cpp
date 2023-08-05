@@ -704,3 +704,118 @@ using namespace std;
 //	return 0;
 //}
 
+
+
+//类对象作为类成员
+//当其他类对象作为本类成员，构造时候先构造类对象，再构造自身，析构的顺序与构造相反
+
+//#include<string>
+//class Phone
+//{
+//public:
+//	Phone(string n) :name(n)
+//	{
+//		cout << "Phone的构造函数调用" << endl;
+//	}
+//	~Phone()
+//	{
+//		cout << "Phone的析构函数调用" << endl;
+//	}
+//	string name;
+//};
+//class Person
+//{
+//public:
+//	Person(string n,string p) :name(n), phone(p)
+//	{
+//		cout << "Person的构造函数调用" << endl;
+//	}
+//	~Person()
+//	{
+//		cout << "Person的析构函数调用" << endl;
+//	}
+//	string name;
+//	Phone phone;
+//};
+//void test()
+//{
+//	Person p("张三","华为");
+//	cout << p.name << "买了" << p.phone.name << endl;
+//}
+//int main()
+//{
+//	test();
+//	return 0;
+//}
+
+
+//静态成员  :在成员变量或者成员函数前加上关键字static
+//1：静态成员变量 
+//	 所有对象共享同一份数据
+//	 在编译阶段分配内存
+//	 类内声明，类外初始化
+//2：静态成员函数
+//	 所有对象共享同一个函数
+//	 静态成员函数只能访问静态成员变量
+
+//class Person
+//{
+//public:
+//	static void func()
+//	{
+//		age = 300;
+//		//Height = 175;//静态成员函数不能访问非静态成员变量,无法区分到底是哪个对象的属性
+//		cout << "静态成员函数的调用" << endl;
+//	}
+//	static int age;//类内声明
+//	//静态成员变量也有访问权限
+//	//静态成员函数也有访问权限
+//private:
+//	static void func2()
+//	{
+//		cout << "私有静态成员函数的调用" << endl;
+//	}
+//	static int ID;
+//	int Height;
+//};
+//int Person::age = 100;//类外初始化
+//int Person::ID = 520;
+//void test1()
+//{
+//	Person p;
+//	cout << p.age << endl;
+//	Person p1;
+//	p1.age = 200;
+//	cout << p1.age << endl;
+//	cout << p.age << endl;
+//
+//}
+////静态成员变量不属于某个对象上，所有对象都共享同一份数据，所以静态成员变量有两种访问方式
+//void test2()
+//{
+//	//1：通过对象进行访问
+//	Person p1;
+//	cout << p1.age << endl;
+//	//2：通过类名进行访问
+//	cout << Person::age << endl;
+//	//cout << Person::ID << endl;//私有权限不可访问
+//}
+////静态成员函数也有两种访问方式
+//void test3()
+//{
+//	Person p1;
+//	//1：通过对象进行访问
+//	p1.func();
+//	//2：通过类名进行访问
+//	Person::func();
+//	cout << Person::age << endl;
+//	//Person::fonc2();//类外不可访问私有静态成员函数
+//}
+//int main()
+//{
+//	//test1();
+//	//test2();
+//	test3();
+//	return 0;
+//}
+
