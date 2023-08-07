@@ -817,3 +817,100 @@ using namespace std;
 //	test3();
 //	return 0;
 //}
+
+
+
+
+//static int b = 2;
+//void test1()
+//{
+//	Person p;
+//	//空对象占用空间为1；
+//	//c++编译器会给每个空对象也分配一个字节空间，是为了区分空对象占内存的位置，每个空对象也应该有独一无二的内存地址
+//	cout << sizeof(p) << endl;
+//}
+//void test2()
+//{
+//	Phone P;
+//	cout << sizeof(P) << endl;
+//}
+//int main()
+//{
+//	test1();
+//	test2();
+//
+//	return 0;
+//}
+
+//C++中成员变量和成员函数是分开存储的
+//每一个非静态成员函数只会诞生一份函数实例，也就是说多个同类型对象会公用一块代码
+//通过this指针指向被调用的成员函数所属的对象
+
+//this指针是隐含每一个非静态成员函数内的一种指针
+//this指针不需要定义，直接使用即可
+//用途：
+//		1: 当形参和成员变量同名时， 解决命名冲突
+//		2：在类的非静态成员函数中返回对象本身，用return *this
+
+//class Person
+//{
+//public:
+//	//Person(int a)
+//	//{
+//	//	a = a;//编译器默认这三个变量一样
+//	//}
+//
+//	Person(int a)
+//	{
+//		this->a = a; //this指针指向被调用的成员函数所属的对象
+//	}
+//
+//	///返回的拷贝值，不是p2本身
+//	/*Person Increase(Person& p)
+//	{
+//		this->a += p.a;
+//		return* this;
+//	}*/
+//
+//	Person& Increase(Person& p)
+//	{
+//		this->a += p.a;
+//		//this指向p2，*this是p2本身
+//		return* this;
+//	}
+//	int a;
+//};
+//void test1()
+//{
+//	Person p(18);
+//	cout << p.a << endl;
+//}
+//void test2()
+//{
+//	Person p1(12);
+//	Person p2(12);
+//	//链式编程
+//	p2.Increase(p1).Increase(p1).Increase(p1);
+//	cout << p2.a << endl;
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	return 0;
+//}//成员变量和成员函数是分开存储的
+//只有非静态成员变量才属于类的对象上
+
+
+//class Person
+//{
+//
+//};
+//class Phone
+//{
+//	int a;					//非静态成员变量，属于类的对象上
+//	static int b;			//静态成员变量，不属于类的对象
+//	void fun(){}			//非静态成员函数，不属于类的对象
+//	static void fun2(){}	//静态成员函数，不属于类的对象
+//};
+
