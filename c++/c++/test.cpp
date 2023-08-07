@@ -913,4 +913,3 @@ using namespace std;
 //	void fun(){}			//非静态成员函数，不属于类的对象
 //	static void fun2(){}	//静态成员函数，不属于类的对象
 //};
-
