@@ -913,3 +913,218 @@ using namespace std;
 //	void fun(){}			//非静态成员函数，不属于类的对象
 //	static void fun2(){}	//静态成员函数，不属于类的对象
 //};
+
+//空指针访问成员函数
+//在c++中，空指针也可以调用成员函数，但是要注意有没有用到this指针，如果用到了this指针，则需要对代码的健壮性进行判别。
+//如果调用编译器确定函数（普通成员函数、静态成员函数），该成员函数中需要对this指针指向的内容进行读取或者修改，出错；反之无错；
+//如果调用运行期确定函数（使用多态的虚函数），出错。
+
+//class Person
+//{
+//public:
+//	void showClass()
+//	{
+//		cout << "class Person" << endl;
+//	}
+//	void showage()
+//	{
+//		
+//		cout << age << endl;// this->age
+//	}
+//	int age;
+//};
+//void test()
+//{
+//	Person* p = NULL;
+//	//p->showage();//出错：该函数内使用了this指针
+//	p->showClass();
+//}
+//int main()
+//{
+//	test();
+//	return 0;
+//}
+
+
+//const修饰的成员函数
+
+//class Person
+//{
+//	
+//public:
+//	//this 指针的本质，是指针常量，void* const this;指针的指向不可修改
+//	//在成员函数后面加const，修饰的是this指针，让指针指向的值也不可修改
+//	//即const void* const this;
+//
+//	//常函数
+//	void showPerson()const
+//	{
+//		//this->m_A = 100;
+//		//this = NULL;//this指针的指向不可修改
+//		this->m_B = 200;
+//	}
+//
+//	void func()
+//	{
+//		m_A = 100;
+//	}
+//	int m_A;
+//	mutable int m_B;//特殊变量，即使在常函数中，也可以修改这个值，加关键字mutable
+//};
+//void test1()
+//{
+//	Person p;
+//	p.showPerson();
+//	cout << p.m_B << endl;
+//}
+//void test2()
+//{
+//	//常对象：在对象前加const，变为常对象
+//	const Person p;
+//	//p.m_A = 100;
+//	p.m_B = 200;//特殊值，可以修改
+//
+//	//常对象只能调用常函数
+//	p.showPerson();
+//	//p.func();//常对象不可调用普通成员函数，因为普通成员函数可以修改属性
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	return 0;
+//}
+
+//友元
+
+//全局函数做友元
+
+//#include<string.h>
+//class Building
+//{
+//	//goodGay全局函数是building好朋友，可以访问Building的私有成员
+//	friend void goodGay(Building& building);
+//public:
+//	Building()
+//	{
+//		Room = "客厅";
+//		BedRoom = "卧室";
+//	}
+//public:
+//	string Room;
+//private:
+//	string BedRoom;
+//};
+//
+//void goodGay(Building& building)
+//{
+//	cout << building.Room << endl;
+//	cout << building.BedRoom << endl;
+//}
+//
+//void test1()
+//{
+//	Building building;
+//	goodGay(building);
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+
+//类做友元
+
+//class Building
+//{
+//	//goodGay类是本类的好朋友，可以访问本类的私有属性
+//	friend class goodGay;
+//public:
+//	Building();
+//public:
+//	string room;
+//private:
+//	string bedroom;
+//};
+//
+//class goodGay
+//{
+//public:
+//	goodGay();
+//	void visit();//访问Building类的成员属性
+//private:
+//	Building* building;
+//};
+//Building::Building()
+//{
+//	room = "客厅";
+//	bedroom = "卧室";
+//}
+//goodGay::goodGay()
+//{
+//	building = new Building;
+//}
+//void goodGay::visit()
+//{
+//	cout << building->room << endl;
+//	cout << building->bedroom << endl;
+//}
+//int main()
+//{
+//	goodGay gg;
+//	gg.visit();
+//	return 0;
+//}
+
+//成员函数做友元
+
+//#include<string>
+//class Building;
+//class goodGay
+//{
+//public:
+//	goodGay();
+//	void visit();//让visit函数可以访问Building中私有成员
+//	void visit2();//让visit2函数不可以访问Building中私有成员
+//	Building* building;
+//};
+//class Building
+//{
+//	//goodGay类下的visit成员函数作为本类的好朋友，可以访问私有成员
+//	friend void goodGay::visit();
+//public:
+//	Building();
+//	string room;
+//private:
+//	string bedroom;
+//};
+//Building::Building()
+//{
+//	room = "客厅";
+//	bedroom = "卧室";
+//}
+//goodGay::goodGay()
+//{
+//	building = new Building;
+//}
+//void goodGay::visit()
+//{
+//	cout << building->room << endl;
+//	cout << building->bedroom << endl;
+//}
+//void goodGay::visit2()
+//{
+//	cout << building->room << endl;
+//	//cout << building->bedroom << endl;
+//}
+//int main()
+//{
+//	goodGay gg;
+//	gg.visit();
+//	gg.visit2();
+//	return 0;
+//}
+
+//运算符重载
+
+//加号运算符重载：实现两个自定义数据类型相加的运算
