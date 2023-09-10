@@ -1393,48 +1393,48 @@ using namespace std;
 //函数调用运算符()重载
 //由于重载后使用的方式非常像函数的调用，因此成为仿函数
 //仿函数没有固定写法，非常灵活
-#include<string>
-class MyPrint
-{
-public:
-	
-	void operator()(string test)
-	{
-		cout << test << endl;
-	}
-	string test;
-};
-void MyPrint2(string test)
-{
-	cout << test << endl;
-}
-void test1()
-{
-	MyPrint myprint;
-	myprint("hello");//由于重载后使用的方式非常像函数的调用，因此成为仿函数
-	MyPrint2("world");
-}
-//仿函数没有固定写法，非常灵活
-//加法类
-class MyAdd
-{
-public:
-	int operator()(int num1,int num2)
-	{
-		return num1 + num2;
-	}
-};
-void test2()
-{
-	MyAdd myadd;
-	cout << myadd(10, 20) << endl;
-	
-	//匿名函数对象
-	cout << MyAdd()(100, 200) << endl;
-}
-int main()
-{
-	//test1();
-	test2();
-	return 0;
-}
+//#include<string>
+//class MyPrint
+//{
+//public:
+//	
+//	void operator()(string test)
+//	{
+//		cout << test << endl;
+//	}
+//	string test;
+//};
+//void MyPrint2(string test)
+//{
+//	cout << test << endl;
+//}
+//void test1()
+//{
+//	MyPrint myprint;
+//	myprint("hello");//由于重载后使用的方式非常像函数的调用，因此成为仿函数
+//	MyPrint2("world");
+//}
+////仿函数没有固定写法，非常灵活
+////加法类
+//class MyAdd
+//{
+//public:
+//	int operator()(int num1,int num2)
+//	{
+//		return num1 + num2;
+//	}
+//};
+//void test2()
+//{
+//	MyAdd myadd;
+//	cout << myadd(10, 20) << endl;
+//	
+//	//匿名函数对象
+//	cout << MyAdd()(100, 200) << endl;
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	return 0;
+//}
