@@ -1126,3 +1126,315 @@ using namespace std;
 //运算符重载
 
 //加号运算符重载：实现两个自定义数据类型相加的运算
+//class Person
+//{
+//public:
+//	//1、成员函数重载+号
+//	/*Person operator+ (Person & p)
+//	{
+//		Person temp;
+//		temp.m_A = this->m_A + p.m_A;
+//		temp.m_B = this->m_B + p.m_B;
+//		return temp;
+//	}*/
+//	int m_A;
+//	int m_B;
+//};
+////2、全局函数重载+号
+//Person operator+(Person& p1, Person& p2)
+//{
+//	Person temp;
+//	temp.m_A = p1.m_A + p2.m_A;
+//	temp.m_B = p1.m_B + p2.m_B;
+//	return temp;
+//}
+//Person operator+(Person& p1, int num)
+//{
+//	Person temp;
+//	temp.m_A = p1.m_A + num;
+//	temp.m_B = p1.m_B + num;
+//	return temp;
+//}
+//void test1()
+//{
+//	Person p1,p2;
+//	p1.m_A = 10;
+//	p1.m_B = 10;
+//	p2.m_A = 10;
+//	p2.m_B = 10;
+//	//成员函数重载的本质调用
+//	//Person p3 = p1.operator+(p2);
+//
+//	//全局函数重载的本质调用
+//	//Person p3 = operator+(p1, p2);
+//
+//	//上式可简化为下式
+//	Person p3 = p1 + p2;
+//	cout << p3.m_A << "  " << p3.m_B << endl;
+//	//运算符重载也可以发生函数重载
+//	Person p4 = p1 + 100;//Person + int 相当于operator+(p1,100)
+//	cout << p4.m_A << "  "<< p4.m_B << endl;
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+//总结1：对于内置数据类型的表达式的运算符是不可能改变的
+//总结2：不要滥用运算符重载 (滥用：+号的名称来实现减法运算)
+
+//左移运算符重载<<  : 重载左移运算符配合友元可以实现输出自定义数据类型
+
+//class Person
+//{
+//	//如果访问类内的私有成员，就要用到友元
+//	friend ostream& operator<<(ostream& cout, Person& p);
+//public:
+//	//如果用成员函数重载左移运算符，p.operator<<(cout),使用时cout在右边，而不是左边：p<<cout 。所以左移运算符重载要通过全局函数实现
+//	//cout是输出流类型，只有一个，所以用&引用,名称可以随便取别名
+//	/*void operator<<(ostream& cout)
+//	{
+//
+//	}*/
+//	int m_a;
+//	int m_b;
+//};
+////void operator<<(ostream& cout, Person& p)
+////{
+////	cout << p.m_a << "  " << p.m_b;
+////	//此形式不能实现链式结构，例如在后面加上endl
+////	//cout<<p<<endl 属于链式结构，cout<<p 的返回类型为void ， void<<endl出错，所以函数返回类型应为ostream&
+////}
+//
+//ostream& operator<<(ostream& cout, Person& p)
+//{
+//	cout << p.m_a << "  " << p.m_b;
+//	return cout;
+//}
+////当<<右边为内置数据类型时，就会调用原来定义的函数（函数重载）
+//int main()
+//{
+//	Person p;
+//	p.m_a = 10; 
+//	p.m_b = 20;
+//	cout << p << "hello word"<<p<<endl;
+//	return 0;
+//}
+
+//递增运算符重载
+
+//class MyInteger
+//{
+//	friend ostream& operator<<(ostream& cout, MyInteger myint);
+//public:
+//	MyInteger()
+//	{
+//		m_num = 0;
+//	}
+//	//前置++重载
+//	//返回值类型为引用，如果不是引用，会创建一个新的变量，导致链式代码出错
+//	MyInteger& operator++()
+//	{
+//		m_num++;
+//		return *this;
+//	}
+//
+//	//后置++重载
+//	//MyInteger operator++(int)  其中int为占位参数，目的是与前置++区分
+//	//返回值类型不能为&引用，因为tmp是个临时变量，局部变量就会被释放，之后再访问就是非法访问了
+//	//但是后置++不能进行链式代码了，与前置++不同
+//	MyInteger operator++(int)
+//	{
+//		//先记录到当前的值，再进行++，最后再返回原来的值
+//		MyInteger tmp = *this;
+//		m_num++;
+//		return tmp;
+//	}
+//private:
+//	int m_num;
+//};
+//ostream& operator<<(ostream& cout, MyInteger myint)
+//{
+//	cout << myint.m_num;
+//	return cout;
+//}
+////左移重载写ostream& operator<<(ostream& cout, MyInteger& myint)时，此时第二个参数有&，
+////为什么前置递增（cout << ++myint）可以，而后置递增（cout << myint++）会报错
+////1、前置递增（++myint）时，重载返回的是对象myint，因此可以采用引用的方式传左移重载函数（ << ）中进行重载；
+////2、但后置递增（myint++）时，对象myint虽然加了1，但是返回的却是局部变量temp记录的值（常量）而不是对象myint，
+////此时需要拿个变量去接收，但是左移重载函数并没有实现此功能，而是直接传进去引用了，
+////相当于MyInteger & myint = 10（直接给常量起别名myint，但这是非法的）。
+//
+//void test1()
+//{
+//	MyInteger myint;
+//	cout << ++(++myint) << endl;
+//	cout << myint << endl;
+//}
+//void test2()
+//{
+//	MyInteger myint1;
+//	cout << ((myint1++)++)++ << endl;
+//	cout << myint1 << endl;//实际上只递增了一次
+//}
+//int main()
+//{
+//	test1();
+//	test2();
+//	return 0;
+//}
+
+//赋值运算符重载
+//C++编译器至少给一个类添加四个函数
+//1.默认构造函数(无参，函数体为空)
+//2.默认析构函数(无参，函数体为空)
+//3.默认拷贝构造函数,对属性进行值拷贝
+//4.赋值运算符 operator= 对属性进行值拷贝
+//如果类中有属性指向堆区，做赋值操作时也会出现深浅拷贝的问题
+//class Person
+//{
+//public:
+//	Person(int age)
+//	{
+//		m_age = new int(age);
+//	}
+//	~Person()
+//	{
+//		if (m_age != NULL)
+//		{
+//			delete m_age;
+//			m_age = NULL;
+//		}
+//	}
+//	//返回类型为Person& ,可以进行链式操作
+//	Person& operator=(Person& p)
+//	{
+//		//编译器提供的是浅拷贝
+//		//m_age = p.m_age;
+//
+//		//应先判断是否有属性在堆区，如果有先释放，然后再深拷贝
+//		if (m_age != NULL)
+//		{
+//			delete m_age;
+//			m_age = NULL;
+//		}
+//		m_age = new int(*p.m_age);
+//		return *this;
+//	}
+//	int* m_age;
+//};
+//void test1()
+//{
+//	Person p1(10);
+//	Person p2(20);
+//	Person p3(30);
+//	p3 = p2 = p1;
+//	cout << *p1.m_age << endl;
+//	cout << *p2.m_age << endl;
+//	cout << *p3.m_age << endl;
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+
+//关系运算符重载
+
+//class Person
+//{
+//public:
+//	Person(string name, int age)
+//	{
+//		this->name = name;
+//		this->age = age;
+//	}
+//	bool operator==(Person& p)
+//	{
+//		if (name == p.name && age == p.age)
+//			return true;
+//		else
+//			return false;
+//	}
+//	bool operator!=(Person& p)
+//	{
+//		if (name != p.name || age != p.age)
+//			return true;
+//		else
+//			return false;
+//	}
+//	string name;
+//	int age;
+//};
+//int main()
+//{
+//	Person p1("www", 18);
+//	Person p2("www", 18);
+//	if (p1 == p2)
+//	{
+//		cout << "p1==p2" << endl;
+//	}
+//	else
+//	{
+//		cout << "p1!=p2" << endl;
+//	}
+//	if (p1 != p2)
+//	{
+//		cout << "p1!=p2" << endl;
+//	}
+//	else
+//	{
+//		cout << "p1==p2" << endl;
+//	}
+//	return 0;
+//}
+
+
+//函数调用运算符()重载
+//由于重载后使用的方式非常像函数的调用，因此成为仿函数
+//仿函数没有固定写法，非常灵活
+#include<string>
+class MyPrint
+{
+public:
+	
+	void operator()(string test)
+	{
+		cout << test << endl;
+	}
+	string test;
+};
+void MyPrint2(string test)
+{
+	cout << test << endl;
+}
+void test1()
+{
+	MyPrint myprint;
+	myprint("hello");//由于重载后使用的方式非常像函数的调用，因此成为仿函数
+	MyPrint2("world");
+}
+//仿函数没有固定写法，非常灵活
+//加法类
+class MyAdd
+{
+public:
+	int operator()(int num1,int num2)
+	{
+		return num1 + num2;
+	}
+};
+void test2()
+{
+	MyAdd myadd;
+	cout << myadd(10, 20) << endl;
+	
+	//匿名函数对象
+	cout << MyAdd()(100, 200) << endl;
+}
+int main()
+{
+	//test1();
+	test2();
+	return 0;
+}
