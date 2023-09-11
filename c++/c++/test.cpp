@@ -1439,6 +1439,8 @@ using namespace std;
 //	return 0;
 //}
 
+
+
 //继承 
 
 //继承的好处：可以减少代码的重复
