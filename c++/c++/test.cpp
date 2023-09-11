@@ -1438,3 +1438,183 @@ using namespace std;
 //	test2();
 //	return 0;
 //}
+
+//继承 
+
+//继承的好处：可以减少代码的重复
+//语法：  class 子类 ：继承方式  父类
+//子类也叫派生类，父类也叫基类
+
+//父类
+//class BasePage
+//{
+//public:
+//	void left()
+//	{
+//		cout << "左边页面的内容" << endl;
+//	}
+//	void right()
+//	{
+//		cout << "右边页面的内容" << endl;
+//	}
+//	void header()
+//	{
+//		cout << "头部页面的内容" << endl;
+//	}
+//	void footer()
+//	{
+//		cout << "底部页面的内容" << endl;
+//	}
+//};
+////子类
+//class CPP :public BasePage
+//{
+//public:
+//	void content()
+//	{
+//		cout << "CPP内容" << endl;
+//	}
+//};
+//class PY :public BasePage
+//{
+//public:
+//	void content()
+//	{
+//		cout << "py内容" << endl;
+//	}
+//};
+//class Java :public BasePage
+//{
+//public:
+//	void content()
+//	{
+//		cout << "Java内容" << endl;
+//	}
+//};
+//void test1()
+//{
+//	CPP cpp;
+//	cpp.header();
+//	cpp.left();
+//	cpp.right();
+//	cpp.footer();
+//	cpp.content();
+//
+//	PY py;
+//	py.header();
+//	py.left();
+//	py.right();
+//	py.footer();
+//	py.content();
+//
+//	Java java;
+//	java.header();
+//	java.left();
+//	java.right();
+//	java.footer();
+//	java.content();
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+
+//继承方式
+
+//公共权限
+//class Base1
+//{
+//public:
+//	int m_a;
+//protected:
+//	int m_b;
+//private:
+//	int m_c;
+//};
+//class Son1 :public Base1
+//{
+//public:
+//	void func()
+//	{
+//		m_a = 10;//父类中的公共权限的成员，到子类中依然是公共权限
+//		m_b = 10;//父类中的保护权限的成员，到子类中依然是保护权限
+//		//m_c = 10;//父类中的私有权限的成员，子类访问不到
+//	}
+//};
+//void test1()
+//{
+//	Son1 son1;
+//	son1.m_a = 100;
+//	//son1.m_b = 100;//son1中的m_b依然是保护权限，类外不可访问
+//}
+//
+////保护继承
+//class Base2
+//{
+//public:
+//	int m_a;
+//protected:
+//	int m_b;
+//private:
+//	int m_c;
+//};
+//class Son2 :protected Base2
+//{
+//public:
+//	void func()
+//	{
+//		m_a = 10;//父类中的公共权限的成员，到子类中变为保护权限
+//		m_b = 10;//父类中的保护权限的成员，到子类中依然是保护权限
+//		//m_c = 10;//父类中的私有权限的成员，子类访问不到
+//	}
+//};
+//void test2()
+//{
+//	Son2 son2;
+//	//son2.m_a = 100; //son2中的m_a变为保护权限，类外不可访问
+//	//son2.m_b = 100; //son2中的m_b依然是保护权限，类外不可访问
+//	//son2.m_c = 100; //son2中的m_c是私有权限，类外不可访问
+//}
+//
+////私有权限
+//class Base3
+//{
+//public:
+//	int m_a;
+//protected:
+//	int m_b;
+//private:
+//	int m_c;
+//};
+//class Son3 :private Base3
+//{
+//public:
+//	void func()
+//	{
+//		m_a = 10;//父类中的公共权限的成员，到子类中变为私有权限
+//		m_b = 10;//父类中的保护权限的成员，到子类中变为私有权限
+//		//m_c = 10;//父类中的私有权限的成员，子类访问不到
+//	}
+//};
+//class GrandSon :public Son3
+//{
+//public:
+//	void func()
+//	{
+//		//m_a = 100;
+//		//m_b = 100;
+//		//因为Son3中m_a  m_b为私有权限，孙子也无法访问儿子的私有内容
+//	}
+//};
+//void test3()
+//{
+//	Son3 s3;
+//	//s3.m_a = 100;//son3中的m_a变为私有权限，类外不可访问
+//	//s3.m_b = 100;//son3中的m_b变为私有权限，类外不可访问
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
