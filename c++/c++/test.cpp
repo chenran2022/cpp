@@ -1620,3 +1620,262 @@ using namespace std;
 //	test1();
 //	return 0;
 //}
+
+//继承中的对象模型
+
+//class Base
+//{
+//public:
+//	int m_a;
+//protected:
+//	int m_b;
+//private:
+//	int m_c;
+//};
+//class Son :public Base
+//{
+//public:
+//	int s1;
+//};
+//void test1()
+//{
+//	Son s1;
+//	cout << sizeof(s1) << endl;
+//	//16
+//	//父类中所有非静态成员属性都会被子类继承下去
+//	//父类中的私有属性，是被编译器隐藏了，因此访问不到，但是确实被继承下去了
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+
+//继承中的析构和构造顺序
+
+//class Base
+//{
+//public:
+//	Base()
+//	{
+//		cout << "Base的构造函数" << endl;
+//	}
+//	~Base()
+//	{
+//		cout << "Base的析构函数" << endl;
+//	}
+//};
+//class Son :public Base
+//{
+//public:
+//	Son()
+//	{
+//		cout << "Son的构造函数" << endl;
+//	}
+//	~Son()
+//	{
+//		cout << "Son的析构函数" << endl;
+//	}
+//};
+//int main()
+//{
+//	//Base b1;
+//	Son s1;
+//	//先构造父类，再构造子类，析构顺序与构造顺序相反
+//	return 0;
+//}
+
+//继承同名成员处理方式
+
+//class Base
+//{
+//public:
+//	Base()
+//	{
+//		a = 200;
+//	}
+//	void func()
+//	{
+//		cout << "Base func()" << endl;
+//	}
+//	void func(int a)
+//	{
+//		cout << "Base func(int a)" << endl;
+//	}
+//	int a;
+//};
+//class Son :public Base
+//{
+//public:
+//	Son()
+//	{
+//		a = 100;
+//	}
+//	void func()
+//	{
+//		cout << "Son func()" << endl;
+//	}
+//	int a;
+//};
+//int main()
+//{
+//	Son s1;
+//	cout << s1.a << endl;
+//	//如果通过子类对象访问父类中的同名成员，需要加作用域
+//	cout << s1.Base::a << endl;
+//
+//	//同名函数
+//	s1.func();//直接调用是子类中的成员函数
+//	s1.Base::func();//调用父类中的同名函数，需加作用域
+//
+//	//如果子类中出现了和父类同名的成员函数，子类中的同名成员会隐藏掉父类中所有的同名成员函数，包括重载函数
+//	//访问父类中被隐藏掉的同名成员函数，需加作用域
+//	//s1.func(100);
+//	s1.Base::func(100);
+//	return 0;
+//}
+
+//继承中同名静态成员处理方式
+
+//class Base
+//{
+//public:
+//	static int m_a;
+//	static void func()
+//	{
+//		cout << "Base func()" << endl;
+//	}
+//	static void func(int a)
+//	{
+//		cout << "Base func(int a)" << endl;
+//	}
+//};
+//int Base::m_a = 100;
+//
+//class Son :public Base
+//{
+//public:
+//	static int m_a;
+//	static void func()
+//	{
+//		cout << "Son func()" << endl;
+//	}
+//};
+//int Son::m_a = 200;
+//
+////同名静态成员属性
+//void test1()
+//{
+//	//1. 通过对象访问
+//	Son s1;
+//	cout << s1.m_a << endl;
+//	cout << s1.Base::m_a << endl;
+//
+//	//2. 通过类名访问
+//	cout << Son::m_a << endl;
+//	//第一个::代表通过类名访问，第二个::代表访问父类作用域下
+//	cout << Son::Base::m_a << endl;
+//}
+//
+////同名静态成员函数
+//void test2()
+//{
+//	//1. 通过对象访问
+//	Son s1;
+//	s1.func();
+//	s1.Base::func();
+//
+//	//2. 通过类名访问
+//	Son::func() ;
+//	//第一个::代表通过类名访问，第二个::代表访问父类作用域下
+//	Son::Base::func();
+//
+//	//如果子类中出现了和父类同名的静态成员函数，子类中的同名静态成员会隐藏掉父类中所有的同名成员函数，包括重载函数
+//	//访问父类中被隐藏掉的同名成员函数，需加作用域
+//	//s1.func(100);
+//	Son::Base::func(100);
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	return 0;
+//}
+
+//多继承语法
+//class 子类：继承方式 父类1，继承方式 父类2...
+//当父类中出现同名成员，需加作用域
+
+//class Base1
+//{
+//public:
+//	Base1()
+//	{
+//		m_a = 100;
+//	}
+//	int m_a;
+//};
+//class Base2
+//{
+//public:
+//	Base2()
+//	{
+//		m_a = 200;
+//	}
+//	int m_a;
+//};
+//class Son:public Base1,public Base2
+//{
+//public:
+//	Son()
+//	{
+//		m_c = 300;
+//		m_d = 400;
+//	}
+//	int m_c;
+//	int m_d;
+//};
+//void test1()
+//{
+//	Son s;
+//	cout << sizeof(Son) << endl;//16
+//	cout << s.Base1::m_a << endl;
+//	cout << s.Base2::m_a << endl;
+//}
+//int main()
+//{
+//	test1();
+//	return 0;
+//}
+
+//菱形继承
+//两个派生类继承同一个基类
+//又有一个类同时继承这两个派生类
+//这种继承被称为菱形继承，或钻石继承
+
+//class Animal
+//{
+//public:
+//	int m_age;
+//};
+////继承之前加上关键字virtual，变为虚继承
+////Animal父类变为虚基类
+//class Sheep:virtual public Animal{};
+//class Tuo :virtual public Animal{};
+//class SheepTuo :public Sheep, public Tuo{};
+//int main()
+//{
+//	SheepTuo st;
+//	st.Sheep::m_age = 18;
+//	st.Tuo::m_age = 28;
+//	//当菱形继承，两个父类拥有相同数据，需加上作用域区分
+//	cout << st.Sheep::m_age << endl;
+//	cout << st.Tuo::m_age << endl;
+//	//这份数据只有一份就可以，菱形继承会导致资源浪费
+//	// 可以利用虚继承解决这个问题
+//	cout << st.m_age << endl;
+//
+//	cout << sizeof(SheepTuo) << endl;
+//	//24: 因为虚继承方式中会多出一个虚指针，用于指向同一份数据，所以大小会多出一个指针的大小
+//	return 0;
+//}
