@@ -1880,3 +1880,176 @@ using namespace std;
 //	return 0;
 //}
 
+
+//多态
+
+//静态多态：函数重载和运算符重载属于静态多态，复用函数名
+//动态多态：派生类和虚函数实现运行时多态
+//区别：
+//静态多态的函数地址早绑定 - 编译阶段确定函数地址
+//动态多态的函数地址晚绑定 - 运行阶段确定函数地址
+
+//class Animal
+//{
+//public:
+//	//虚函数
+//	virtual void speak()
+//	{
+//		cout << "动物说话" << endl;
+//	}
+//};
+//class Cat :public Animal
+//{
+//public:
+//	void speak()
+//	{
+//		cout << "猫在说话" << endl;
+//	}
+//};
+//class Dog :public Animal
+//{
+//public:
+//	void speak()
+//	{
+//		cout << "狗在说话" << endl;
+//	}
+//};
+//void doSpeak(Animal& animal)  //Animal& animal = cat; 允许父子之间的类型转换，父类引用或指针指向子类
+//{
+//	animal.speak();
+//	//地址早绑定 - 编译阶段确定函数地址
+//	//如果想要执行猫在说话，那么这个函数地址不能早绑定，需要晚绑定
+//	//在父类成员函数前加上virtual  子类成员函数可加可不加virtual
+//
+//	//动态多态的满足条件：
+//	//1. 有继承关系
+//	//2. 子类要重写父类的虚函数 
+//		//重写：函数返回值类型、名称、参数列表完全相同。与重载不一样
+//	
+//	//动态多态使用
+//	//父类的指针或者引用，指向子类对象
+//
+//
+//}
+//void test()
+//{
+//	Cat cat;
+//	doSpeak(cat);
+//	Dog dog;
+//	doSpeak(dog);
+//}
+//int main()
+//{
+//	test();
+//	return 0;
+//}
+
+
+//class Animal
+//{
+//public:
+//	//虚函数
+//	virtual void speak()
+//	{
+//		cout << "动物说话" << endl;
+//	}
+//};
+////Animal 内部结构：
+////vfptr -> vftable (表内记录虚函数的地址 &Animal::speak)
+////vfptr - 虚函数(表)指针 virtual function pointer
+////vftable - 虚函数表  virtual function table
+//class Cat :public Animal
+//{
+//public:
+//	void speak()
+//	{
+//		cout << "猫在说话" << endl;
+//	}
+//};
+////子类 Cat 内部结构（没有进行虚函数函数重写）:
+////继承父类的vfptr -> 指向子类的vftable (表内记录虚函数的地址 &Animal::speak)
+////如果进行了虚函数的重写，即当子类重写父类的虚函数，子类中的虚函数表内部会 替换成 子类的虚函数地址 （&Cat::speak)
+//
+////当父类的指针或者引用指向子类对象的时候，发生动态多态
+//// Cat cat;
+//// doSpeak(cat);
+//// Animal& animal = cat; //，调用的是Cat对象，从Cat的虚函数表中调用虚函数
+//// animal.speak();
+//
+//class Dog :public Animal
+//{
+//public:
+//	void speak()
+//	{
+//		cout << "狗在说话" << endl;
+//	}
+//};
+//void doSpeak(Animal& animal)  //Animal& animal = cat; 允许父子之间的类型转换，父类引用或指针指向子类
+//{
+//	animal.speak();
+//}
+//void test()
+//{
+//	Cat cat;
+//	doSpeak(cat);
+//	cout << sizeof(cat) << endl;
+//	cout << sizeof(Animal) << endl;
+//	Dog dog;
+//	doSpeak(dog);
+//}
+//int main()
+//{
+//	test();
+//	return 0;
+//}
+
+
+//多态案例 - 计算器类
+
+
+//普通法
+
+//#include<string.h>
+//class Calculator
+//{
+//public:
+//	/*int  Add()
+//	{
+//		return m_1 + m_2;
+//	}
+//	int Sub()
+//	{
+//		return m_1 - m_2;
+//	}
+//	int Mul()
+//	{
+//		return m_1 * m_2;
+//	}*/
+//	int GetResult(string oper)
+//	{
+//		if(oper == "+")
+//			return m_1 + m_2;
+//		else if (oper == "-")
+//			return m_1 - m_2;
+//		else if(oper=="*")
+//			return m_1 * m_2;
+//	}
+//	//如果想要扩展新的功能，需要修改源码
+//	//在真实开发中，提倡开闭原则
+//	//开闭原则：对扩展进行开放，对修改进行关闭
+//	int m_1;
+//	int m_2;
+//};
+//void test1()
+//{
+//	Calculator cal;
+//	cal.m_1 = 100;
+//	cal.m_2 = 200;
+//	/*cout << cal.m_1 << "+" << cal.m_2 << "=" << cal.Add() << endl;
+//	cout << cal.m_1 << "-" << cal.m_2 << "=" << cal.Sub() << endl;
+//	cout << cal.m_1 << "*" << cal.m_2 << "=" << cal.Mul() << endl;*/
+//	cout << cal.m_1 << "+" << cal.m_2 << "=" << cal.GetResult("+") << endl;
+//	cout << cal.m_1 << "-" << cal.m_2 << "=" << cal.GetResult("-") << endl;
+//	cout << cal.m_1 << "*" << cal.m_2 << "=" << cal.GetResult("*") << endl;
+//}
+
