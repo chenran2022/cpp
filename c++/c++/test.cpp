@@ -2053,3 +2053,73 @@ using namespace std;
 //	cout << cal.m_1 << "*" << cal.m_2 << "=" << cal.GetResult("*") << endl;
 //}
 
+//利用多态实现计算器
+// 多态的好处：
+// 1、组织结构清晰
+// 2、可读性强
+// 3、对于前期和后期扩展以及维护性高  - 开闭原则：对扩展进行开放，对修改进行关闭
+
+//实现计算器抽象类
+//class AbstractCalculator
+//{
+//public:
+//	virtual int GetResult()
+//	{
+//		return 0;
+//	}
+//	int m_1;
+//	int m_2;
+//};
+//class Add :public AbstractCalculator
+//{
+//public:
+//	int GetResult()
+//	{
+//		return m_1 + m_2;
+//	}
+//};
+//class Sub :public AbstractCalculator
+//{
+//public:
+//	int GetResult()
+//	{
+//		return m_1 - m_2;
+//	}
+//};
+//class Mul :public AbstractCalculator
+//{
+//public:
+//	int GetResult()
+//	{
+//		return m_1 * m_2;
+//	}
+//};
+//void test2()
+//{
+//	//动态多态使用
+//	//父类的指针或者引用，指向子类对象
+//	AbstractCalculator* cal = new Add;
+//	cal->m_1 = 10;
+//	cal->m_2 = 20;
+//	cout << cal->m_1 << "+" << cal->m_2 << "=" << cal->GetResult() << endl;
+//	//用完记得销毁
+//	delete cal;
+//
+//	AbstractCalculator* cal2 = new Sub;
+//	cal2->m_1 = 10;
+//	cal2->m_2 = 20;
+//	cout << cal2->m_1 << "-" << cal2->m_2 << "=" << cal2->GetResult() << endl;
+//	delete cal2;
+//
+//	AbstractCalculator* cal3 = new Mul;
+//	cal3->m_1 = 10;
+//	cal3->m_2 = 20;
+//	cout << cal3->m_1 << "*" << cal3->m_2 << "=" << cal3->GetResult() << endl;
+//	delete cal3;
+//}
+//int main()
+//{
+//	//test1();
+//	test2();
+//	return 0;
+//}
