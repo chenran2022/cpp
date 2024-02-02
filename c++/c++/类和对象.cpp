@@ -489,6 +489,7 @@ using namespace std;
 
 
 //内部类
+
 // class A
 // {
 // public:
