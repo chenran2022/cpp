@@ -1,6 +1,6 @@
-#include <iostream>
-#include<cstdlib>
-using namespace std;
+// #include <iostream>
+// #include<cstdlib>
+// using namespace std;
 
 //类的六个默认成员函数：
 //构造函数、拷贝构造函数、析构函数、赋值运算符重载、取地址运算符重载、const修饰的取地址运算符重载
