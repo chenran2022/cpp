@@ -517,3 +517,36 @@ using namespace std;
 // 	b.fun(a);
 // 	return 0;
 // }
+
+
+
+//匿名对象
+//
+//class MyClass
+//{
+//public:
+//	MyClass()
+//	{
+//		cout << "MyClass" << endl;
+//	}
+//	~MyClass()
+//	{
+//		cout << "~MyClass" << endl;
+//	}
+//	void test()
+//	{
+//		cout << "test" << endl;
+//	}
+//
+//private:
+//
+//};
+//int main()
+//{
+//	MyClass m1;  //m1的生命周期在整个main函数
+//	m1.test();
+//	
+//	//MyClass()  匿名对象  生命周期只在这一行
+//	MyClass().test();  //只有这一行会使用到这个创建对象，别人不再使用
+//	return 0;
+//}
