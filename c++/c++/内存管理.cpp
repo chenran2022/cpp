@@ -4,17 +4,17 @@ using namespace std;
 //
 //int main()
 //{
-//	//C  º¯Êı
+//	//C  å‡½æ•°
 //	int* p1 = (int*)malloc(sizeof(int));
 //	int* p3 = (int*)malloc(sizeof(int) * 10);
 //	
 //	free(p1);
 //	free(p3);
 //	
-//	//C++ ²Ù×÷·û
-//	int* p2 = new int;//Ëæ»úÖµ
-//	//int* p2 = new int(10);  //ÉêÇëÒ»¸öint4¸ö×Ö½ÚµÄ¿Õ¼ä£¬³õÊ¼»¯Îª10
-//	int* p4 = new int[10];    //ÉêÇë10¸öintµÄ40¸ö×Ö½ÚµÄ¿Õ¼ä
+//	//C++ æ“ä½œç¬¦
+//	int* p2 = new int;//éšæœºå€¼
+//	//int* p2 = new int(10);  //ç”³è¯·ä¸€ä¸ªint4ä¸ªå­—èŠ‚çš„ç©ºé—´ï¼Œåˆå§‹åŒ–ä¸º10
+//	int* p4 = new int[10];    //ç”³è¯·10ä¸ªintçš„40ä¸ªå­—èŠ‚çš„ç©ºé—´
 //
 //	delete p2;
 //	delete[] p4;
@@ -23,42 +23,42 @@ using namespace std;
 
 
 
-//¼ÈÈ»ÒÑ¾­ÓĞÁËmallocºÍfree£¬newºÍdeleteµÄÒâÒåºÎÔÚ
+//æ—¢ç„¶å·²ç»æœ‰äº†mallocå’Œfreeï¼Œnewå’Œdeleteçš„æ„ä¹‰ä½•åœ¨
 
-//1. ¶ÔÓÚÄÚÖÃÀàĞÍ£¬Ğ§¹ûÒ»Ñù
-//2. ¶ÔÓÚ×Ô¶¨ÒåÀàĞÍ£¬Ğ§¹û¾Í²»Ò»ÑùÁË¡£mallocÖ»ÉêÇë¿Õ¼ä£¬newÉêÇë¿Õ¼ä+¹¹Ôìº¯Êı³õÊ¼»¯
-//		freeÖ»ÊÍ·Å¿Õ¼ä£¬deleteÎö¹¹º¯Êı+ÊÍ·Å¿Õ¼ä
-class MyClass
-{
-public:
-	MyClass()
-	{
-		_a = 10;
-		cout << "MyClass" << endl;
-	}
-	~MyClass()
-	{
-		cout << "~MyClass" << endl;
-	}
-	void test()
-	{
-		cout << "test" << endl;
-	}
+//1. å¯¹äºå†…ç½®ç±»å‹ï¼Œæ•ˆæœä¸€æ ·
+//2. å¯¹äºè‡ªå®šä¹‰ç±»å‹ï¼Œæ•ˆæœå°±ä¸ä¸€æ ·äº†ã€‚mallocåªç”³è¯·ç©ºé—´ï¼Œnewç”³è¯·ç©ºé—´+æ„é€ å‡½æ•°åˆå§‹åŒ–
+//		freeåªé‡Šæ”¾ç©ºé—´ï¼Œdeleteææ„å‡½æ•°+é‡Šæ”¾ç©ºé—´
+// class MyClass
+// {
+// public:
+// 	MyClass()
+// 	{
+// 		_a = 10;
+// 		cout << "MyClass" << endl;
+// 	}
+// 	~MyClass()
+// 	{
+// 		cout << "~MyClass" << endl;
+// 	}
+// 	void test()
+// 	{
+// 		cout << "test" << endl;
+// 	}
 
-private:
-	int _a;
-};
-int main()
-{
-	int* p1 = new int;
-	int* p2 = (int*)malloc(sizeof(int));
-	//¶ÔÓÚÄÚÖÃÀàĞÍint£¬p1ºÍp2Ğ§¹ûÒ»Ñù
+// private:
+// 	int _a;
+// };
+// int main()
+// {
+// 	int* p1 = new int;
+// 	int* p2 = (int*)malloc(sizeof(int));
+// 	//å¯¹äºå†…ç½®ç±»å‹intï¼Œp1å’Œp2æ•ˆæœä¸€æ ·
 
 
-	// ×Ô¶¨ÒåÀàĞÍ
-	MyClass* p4 = (MyClass*)malloc(sizeof(MyClass));//ÉêÇë¿Õ¼ä
-	MyClass* p3 = new MyClass;	//ÉêÇë¿Õ¼ä+¹¹Ôìº¯Êı³õÊ¼»¯
-	free(p4);		//ÊÍ·Å¿Õ¼ä
-	delete p3;		//Îö¹¹º¯Êı+ÊÍ·Å¿Õ¼ä
-	return 0;
-}
+// 	// è‡ªå®šä¹‰ç±»å‹
+// 	MyClass* p4 = (MyClass*)malloc(sizeof(MyClass));//ç”³è¯·ç©ºé—´
+// 	MyClass* p3 = new MyClass;	//ç”³è¯·ç©ºé—´+æ„é€ å‡½æ•°åˆå§‹åŒ–
+// 	free(p4);		//é‡Šæ”¾ç©ºé—´
+// 	delete p3;		//ææ„å‡½æ•°+é‡Šæ”¾ç©ºé—´
+// 	return 0;
+// }
