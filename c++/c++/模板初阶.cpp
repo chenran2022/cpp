@@ -1,5 +1,5 @@
-#include <iostream>
-using namespace std;
+// #include <iostream>
+// using namespace std;
 
 //泛型编程：编写与类型无关的代码，代码复用
 //模板->写跟类型无关的代码
