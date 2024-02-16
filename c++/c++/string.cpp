@@ -1,4 +1,4 @@
-//STL  ±ê×¼Ä£°å¿â
+//STL  æ ‡å‡†æ¨¡æ¿åº“
 
 #include <iostream>
 #include<string>
@@ -11,15 +11,15 @@ using namespace std;
 //	string s1;
 //	string s2("hfdsjak");
 //	string s3(s2);
-//	string s4 = "dfsa";	//±àÒëÆ÷»áÓÅ»¯³ÉÀàËÆÓÚs2
+//	string s4 = "dfsa";	//ç¼–è¯‘å™¨ä¼šä¼˜åŒ–æˆç±»ä¼¼äºs2
 //	string s6 = s4;
 //
-//	string s5(10, 'a'); //³õÊ¼»¯Îªn¸ö×Ö·ûµÄ×Ö·û´®
-//	string s7("fsafasf", 4);//³õÊ¼»¯Îª×Ö·û´®µÄÇ°n¸ö×Ö·û
-//	string s8(s2, 1, 4);//´Óstring×Ö·û´®µÄÄ³¸öÎ»ÖÃÆğÖ¸¶¨³¤¶È¿½±´³õÊ¼»¯
+//	string s5(10, 'a'); //åˆå§‹åŒ–ä¸ºnä¸ªå­—ç¬¦çš„å­—ç¬¦ä¸²
+//	string s7("fsafasf", 4);//åˆå§‹åŒ–ä¸ºå­—ç¬¦ä¸²çš„å‰nä¸ªå­—ç¬¦
+//	string s8(s2, 1, 4);//ä»stringå­—ç¬¦ä¸²çš„æŸä¸ªä½ç½®èµ·æŒ‡å®šé•¿åº¦æ‹·è´åˆå§‹åŒ–
 //	string s9(s2, 1);
 //	string s10(s2, 1, string::npos);
-//	//9¡¢10Ò»Ñù£¬9ÓĞ¸öÈ±Ê¡Ä¬ÈÏÖµnpos,µ½×Ö·û´®½áÎ²
+//	//9ã€10ä¸€æ ·ï¼Œ9æœ‰ä¸ªç¼ºçœé»˜è®¤å€¼npos,åˆ°å­—ç¬¦ä¸²ç»“å°¾
 //
 //	cout << s5 << endl;
 //	cout << s7 << endl;
@@ -39,25 +39,25 @@ using namespace std;
 //int main()
 //{
 //	//string s("12345");
-//	//s.push_back('6');//push_backÖ»ÄÜÎ²²åÒ»¸ö×Ö·û
+//	//s.push_back('6');//push_backåªèƒ½å°¾æ’ä¸€ä¸ªå­—ç¬¦
 //	//cout << s << endl;
-//	//s.append("789");//append¿ÉÒÔÎ²²å×Ö·û´®
+//	//s.append("789");//appendå¯ä»¥å°¾æ’å­—ç¬¦ä¸²
 //	//cout << s << endl;
 //
-//	////+=¼È¿ÉÒÔÎ²²åÒ»¸ö×Ö·û£¬Ò²¿ÉÒÔÎ²²å×Ö·û´®
+//	////+=æ—¢å¯ä»¥å°¾æ’ä¸€ä¸ªå­—ç¬¦ï¼Œä¹Ÿå¯ä»¥å°¾æ’å­—ç¬¦ä¸²
 //	//s += '1';
 //	//cout << s << endl;
 //	//s += "12345";
 //	//cout << s << endl;
 //
 //
-//	//½«Êı×Ö×Ö·û´®×ª³ÉÕûĞÍ
+//	//å°†æ•°å­—å­—ç¬¦ä¸²è½¬æˆæ•´å‹
 //	string s("123412");
 //	int tmp = 0;
 //	for (size_t i = 0; i < s.size(); ++i)
 //	{
 //		tmp *= 10;
-//		tmp += (s[i]-'0');//×Ö·ûÊı×Ö×ªÎªÕûĞÎ
+//		tmp += (s[i]-'0');//å­—ç¬¦æ•°å­—è½¬ä¸ºæ•´å½¢
 //	}
 //	cout << tmp;
 //
@@ -67,33 +67,33 @@ using namespace std;
 
 
 
-//µü´úÆ÷²»Ò»¶¨ÊÇÖ¸Õë£¬ÏñÖ¸ÕëÒ»ÑùµÄ¶«Î÷
-//µü´úÆ÷·ÖÎªËÄÖÖ£º
-//			·½Ïò£ºÕıÏòºÍ·´Ïò
-//			ÊôĞÔ£ºÆÕÍ¨ºÍconst
+//è¿­ä»£å™¨ä¸ä¸€å®šæ˜¯æŒ‡é’ˆï¼ŒåƒæŒ‡é’ˆä¸€æ ·çš„ä¸œè¥¿
+//è¿­ä»£å™¨åˆ†ä¸ºå››ç§ï¼š
+//			æ–¹å‘ï¼šæ­£å‘å’Œåå‘
+//			å±æ€§ï¼šæ™®é€šå’Œconst
 //
 //int str2int(const string& str)
 //{
-//	//str±»constĞŞÊÎ£¬str.begin·µ»ØµÄÊÇconst_inerator
+//	//strè¢«constä¿®é¥°ï¼Œstr.beginè¿”å›çš„æ˜¯const_inerator
 //	//string::iterator it = str.begin();
 //	string::const_iterator it = str.begin();
-//	//const_ineratorÖ»ÄÜ¶Á£¬²»ÄÜĞ´
+//	//const_ineratoråªèƒ½è¯»ï¼Œä¸èƒ½å†™
 //	int num = 0;
 //	while (it != str.end())
 //	{
-//		//*it = 1;//²»ÄÜĞ´
+//		//*it = 1;//ä¸èƒ½å†™
 //		num *= 10;
 //		num += (*it-'0');
 //		++it;
 //	}
 //
-//	//ÄæÏòconstµü´úÆ÷
+//	//é€†å‘constè¿­ä»£å™¨
 //	//auto ri = str.rbegin();
 //	string::const_reverse_iterator ri = str.rbegin();
 //	int num2 = 0;
 //	while (ri != str.rend())
 //	{
-//		//*ri = 1;//²»ÄÜĞ´
+//		//*ri = 1;//ä¸èƒ½å†™
 //		num2 *= 10;
 //		num2 += (*ri - '0');
 //		++ri;
@@ -103,14 +103,14 @@ using namespace std;
 //int main()
 //{
 //	string s("hello");
-//	//[]+ÏÂ±ê 
-//	//Ğ´
+//	//[]+ä¸‹æ ‡ 
+//	//å†™
 //	size_t i = 0;
 //	for (; i < s.size(); ++i)
 //	{
 //		s[i] += 1;
 //	}
-//	//¶Á
+//	//è¯»
 //	for (i = 0; i < s.size(); ++i)
 //	{
 //		cout << s[i] << " ";
@@ -118,8 +118,8 @@ using namespace std;
 //	cout << endl;
 //
 //
-//	//µü´úÆ÷
-//	//Ğ´
+//	//è¿­ä»£å™¨
+//	//å†™
 //	string::iterator it = s.begin();
 //	while (it != s.end())
 //	{
@@ -127,7 +127,7 @@ using namespace std;
 //		++it;
 //	}
 //
-//	//¶Á
+//	//è¯»
 //	it = s.begin();
 //	while (it != s.end())
 //	{
@@ -135,15 +135,15 @@ using namespace std;
 //		++it;
 //	}
 //	cout << endl;
-//	//·¶Î§for  
-//	//C++11  Ô­Àí-¡·±»Ìæ»»³Éµü´úÆ÷
+//	//èŒƒå›´for  
+//	//C++11  åŸç†-ã€‹è¢«æ›¿æ¢æˆè¿­ä»£å™¨
 //	for (auto au : s)
 //	{
 //		cout  << au << " ";
 //	}
 //	cout << endl;
 //
-//	//ÄæÏòµü´úÆ÷,ÄæÏò·ÃÎÊ
+//	//é€†å‘è¿­ä»£å™¨,é€†å‘è®¿é—®
 //	string::reverse_iterator ri = s.rbegin();
 //	while (ri != s.rend())
 //	{
@@ -169,7 +169,7 @@ using namespace std;
 //	cout << s2.size() << endl;
 //	cout << s2.length() << endl;
 //
-//	cout << s.max_size() << endl;//Ã»Ê²Ã´ÒâÒå
+//	cout << s.max_size() << endl;//æ²¡ä»€ä¹ˆæ„ä¹‰
 //
 //	cout << s.capacity() << endl;
 //	cout << s2.capacity() << endl;
@@ -189,10 +189,10 @@ using namespace std;
 //int main()
 //{
 //	string s;
-//	//s.reserve(100);//ĞŞ¸Äcapacity,²»»áĞŞ¸Äsize
+//	//s.reserve(100);//ä¿®æ”¹capacity,ä¸ä¼šä¿®æ”¹size
 //	//cout << "size" << s.size() << endl;
 //
-//	//s.resize(100);//ĞŞ¸Äsize,capacity²»¹»Ò²»áÔö´ócapacity
+//	//s.resize(100);//ä¿®æ”¹size,capacityä¸å¤Ÿä¹Ÿä¼šå¢å¤§capacity
 //	//cout << s.size() << " " << s.capacity() << endl;
 //	//s.resize(5, 'a');
 //	//cout << s << endl;
@@ -219,7 +219,7 @@ using namespace std;
 //int main()
 //{
 //	string s("1231");
-//	//ÔÚÖ¸¶¨Î»ÖÃ²åÈë
+//	//åœ¨æŒ‡å®šä½ç½®æ’å…¥
 //	s.insert(s.begin(), '0');
 //	cout << s << endl;
 //	s.insert(2, "wht");
@@ -227,7 +227,7 @@ using namespace std;
 //
 //	/*s.erase(5);
 //	cout << s << endl;*/
-//	s.erase(2, 3);//´ÓµÚ¶ş¸öÎ»ÖÃÉ¾³ıÈı¸ö×Ö·û
+//	s.erase(2, 3);//ä»ç¬¬äºŒä¸ªä½ç½®åˆ é™¤ä¸‰ä¸ªå­—ç¬¦
 //	cout << s << endl;
 //	s.erase();
 //	cout << s << endl;
@@ -236,3 +236,45 @@ using namespace std;
 //}
 
 
+//int main()
+//{
+//	string str("hello");
+//	//è·å–å­—ç¬¦æ•°ç»„é¦–åœ°å€ï¼Œç”¨Cå­—ç¬¦ä¸²çš„å½¢å¼éå†
+//	const char* ch = str.c_str();
+//	while (*ch)
+//	{
+//		cout << *ch << " " ;
+//		++ch;
+//	}
+//	cout << endl;
+//
+//	cout << str << endl;//è°ƒç”¨çš„æ˜¯stringçš„operator<<
+//	cout << str.c_str() << endl;//ç›´æ¥è¾“å‡ºconst char*
+//
+//
+//	str += '\0';
+//	str += "world";
+//
+//	cout << str << endl;//è°ƒç”¨çš„æ˜¯stringçš„operator<<	å°†å¯¹è±¡æ•°ç»„ä¸­æ‰€æœ‰å­—ç¬¦è¾“å‡º
+//	cout << str.c_str() << endl;//ç›´æ¥è¾“å‡ºconst char*	é‡åˆ°\0ç»“æŸ
+//
+//	//asciiç è¡¨ï¼ˆæ—©æœŸè®¡ç®—æœºåªè¡¨ç¤ºè‹±æ–‡ï¼‰ å€¼å’Œå­—æ¯æ ‡ç‚¹ç­‰çš„æ˜ å°„å…³ç³»
+//	//unsigned char  0-255
+//	//ç¼–ç è¡¨	å€¼å’Œè¡¨ç¤ºç¬¦å·ï¼ˆå­—æ¯æˆ–è€…æ–‡å­—ï¼‰æ˜ å°„å…³ç³»
+//
+//	//è®¡ç®—æœºæ™®åŠåˆ°å…¨ä¸–ç•Œï¼Œéœ€è¦è¡¨ç¤ºå¾ˆå¤šå›½å®¶çš„æ–‡å­—
+//	//unicodeæ˜¯è®¡ç®—æœºç§‘å­¦é¢†åŸŸé‡Œçš„ä¸€é¡¹ä¸šç•Œæ ‡å‡†ï¼ŒåŒ…æ‹¬å­—ç¬¦é›†ã€ç¼–ç æ–¹æ¡ˆ
+//	//utf8  utf16  utf32
+//	//linux utf8
+//	//windows  gbk(ä¸­å›½è‡ªå·±åˆ¶å®šçš„,æŠŠä¸­æ–‡è¾“è¿›å»)
+//
+//	/*char ch2[] = "ä¸­å›½";
+//	cout << ch2 << endl;
+//	ch2[1] = -47;
+//	cout << ch2 << endl;
+//	ch2[1] = -46;
+//	cout << ch2 << endl;
+//	ch2[1] = -48;
+//	cout << ch2 << endl;*/
+//	return 0;
+//}
