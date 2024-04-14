@@ -288,7 +288,7 @@ using namespace std;
 //     string s4("s4.cpp.zip");
 
 
-//     //find 寻找某个字符的位置，找不到返回string::npos  size_t npos = -1;
+//     //find 寻找某个字符的下标位置，找不到返回string::npos  size_t npos = -1;
 //     size_t pos1 = s1.find('.');
 //     if(pos1!=string::npos)
 //     {
