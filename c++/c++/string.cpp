@@ -278,3 +278,87 @@ using namespace std;
 //	cout << ch2 << endl;*/
 //	return 0;
 //}
+
+
+// int main()
+// {
+//     string s1("www.test");
+//     string s2("sfkaj.cpp");
+//     string s3("test.c");
+//     string s4("s4.cpp.zip");
+
+
+//     //find 寻找某个字符的位置，找不到返回string::npos  size_t npos = -1;
+//     size_t pos1 = s1.find('.');
+//     if(pos1!=string::npos)
+//     {
+//         //substr()是C++语言函数，主要功能是复制子字符串，要求从指定位置开始，并具有指定的长度
+//         cout<<s1.substr(pos1)<<endl;
+//     }
+//     size_t pos2 = s2.find('.');
+//     if(pos2!=string::npos)
+//     {
+//         cout<<s2.substr(pos2)<<endl;
+//     }
+//     size_t pos3 = s3.find('.');
+//     if(pos3!=string::npos)
+//     {
+//         cout<<s3.substr(pos3)<<endl;
+//     }
+
+//     //rfind是从后往前找
+//     size_t pos4 = s4.rfind('.');
+//     if(pos4!=string::npos)
+//     {
+//         cout<<s4.substr(pos4)<<endl;
+//     }
+
+//     //协议  域名  资源名称
+//     string url("https://github.com/chenran2022?tab=repositories");
+//     //分离url  协议  域名  资源名称
+//     size_t i1=url.find(':');
+//     if(i1!=string::npos)
+//     {
+//         cout<<url.substr(0,i1)<<endl;
+//     }
+//     size_t i2=url.find('/',i1+3);
+//     cout<<i1<<"   "<<i2<<endl;
+//     if(i2!=string::npos)
+//     {
+//         cout<<url.substr(i1+3,i2-(i1+3))<<endl;;
+//     }
+//     cout<<url.substr(i2+1)<<endl;
+//     return 0;
+// }
+
+
+// int main()
+// {
+//     string s1("hello");
+//     string test1=s1+"wrold";    //+不改变变量本身，返回临时变量，效率低
+//     cout<<s1<<"     "<<test1<<endl;
+//     string test2=s1+="world";   //+=改变变量本身，返回本身
+//     cout<<s1<<"     "<<test2<<endl;
+
+//     //字符串比较
+//     string str1("abcd");
+//     string str2("bbcd");
+//     cout<<(str1<str2)<<endl;
+//     cout<<(str1<"bbcd")<<endl;
+//     cout<<("bbcd"<str1)<<endl;
+//     return 0;
+// }
+
+
+
+// //输出一句英语的最后一个单词的长度，每个单词以空格隔开
+// int main()
+// {
+//     string s;
+//     //cin>>s; //cin和scanf  遇到空白字符（空格、tab、换行）就停止
+//     getline(cin,s);//遇到换行结束
+  
+//     size_t pos = s.rfind(' ');
+//     cout<<s.size()-(pos+1)<<endl;
+//     return 0;
+// }
