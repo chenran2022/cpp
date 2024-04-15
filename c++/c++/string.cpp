@@ -1,7 +1,7 @@
 //STL  标准模板库
 
 #include <iostream>
-#include<string>
+#include<cstring>
 using namespace std;
 
 
@@ -362,3 +362,132 @@ using namespace std;
 //     cout<<s.size()-(pos+1)<<endl;
 //     return 0;
 // }
+
+// namespace cr
+// {
+//     class string
+//     {
+//         public:
+//             string():_str(nullptr)
+//             {
+
+//             }
+//             string(char* str):_str(str)
+//             {
+
+//             }
+//             size_t size()
+//             {
+//                 return strlen(_str);
+//             }
+//             char& operator[](size_t i)
+//             {
+//                 return _str[i];
+//             }
+//         private:
+//             char* _str;
+//     };
+//     void test()
+//     {
+//         string s1("hello");
+//         string s2;
+//         for(size_t i=0;i<s1.size();++i)
+//         {
+//             // s1[i]+=1; 
+//             //"hello"是代码段，不能被修改，会报错
+//             //所以要在堆区开辟空间存放数据内容
+//             cout<<s1[i]<<"  ";
+//         }
+//         cout<<endl;
+//     }
+// }
+// int main()
+// {
+//     cr::test();
+//     return 0;
+// }
+
+
+namespace cr
+{
+    class string
+    {
+        public: 
+            // string():_str(nullptr)
+            // {
+
+            // }
+            // string():_str(new char[1])
+            // {
+            //     _str[0]='\0';
+            // }
+
+            // string(char* str):_str(new char[strlen(str+1)])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+            // {
+            //     strcpy(_str,str);
+            // }
+            string(char* str=""):_str(new char[strlen(str+1)])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+            {
+                strcpy(_str,str);
+            }
+            
+            string(const string& str):_str(new char[strlen(str.len)])
+            {
+
+            }
+            ~string()
+            {
+                delete[] _str;
+                _str= nullptr;
+            }
+            size_t size()
+            {
+                return strlen(_str);
+                // strlen是直接解引用找'\0', 当_str为空指针的时候，就会报错, 所以默认构造函数要存一个\0
+            }
+            char& operator[](size_t i)
+            {
+                return _str[i];
+            }
+            const char* c_str()
+            {
+                return _str;
+            }
+        private:
+            char* _str;
+    };
+    void test1()
+    {
+        string s1("hello");
+        string s2;
+        for(size_t i=0;i<s1.size();++i)
+        {
+            s1[i]+=1; 
+            
+            cout<<s1[i]<<"  ";
+        }
+        cout<<endl;
+        for(size_t i=0;i<s2.size();++i)
+        {
+            s2[i]= s1[i]; 
+            
+            cout<<s2[i]<<"  ";
+        }
+        cout<<endl;
+
+    }
+
+    void test2()
+    {
+        string s1("hello");
+        string s2(s1);  //浅拷贝会造成在析构函数里重复释放同一块空间
+        cout<<s1.c_str()<<endl;
+        cout<<s2.c_str()<<endl;
+    }
+}
+int main()
+{
+    // cr::test1();
+    cr::test2();
+    return 0;
+}
