@@ -1,7 +1,7 @@
 //STL  标准模板库
 
-#include <iostream>
-#include<cstring>
+#include<iostream>
+#include<string>
 using namespace std;
 
 
@@ -192,16 +192,17 @@ using namespace std;
 //	//s.reserve(100);//修改capacity,不会修改size
 //	//cout << "size" << s.size() << endl;
 //
-//	//s.resize(100);//修改size,capacity不够也会增大capacity
+//	s.resize(100);//修改size,capacity不够也会增大capacity
 //	//如果n大于当前的容器大小，则通过在容器结尾插入(inserting)适合数量的元素使得整个容器大小达到n。
 //	//且如果给出val，插入的新元素全为val，否则，执行默认构造函数。
-//	//cout << s.size() << " " << s.capacity() << endl;
-//	//s.resize(5, 'a');
-//	//cout << s << endl;
-//	//cout << s.size() << " " << s.capacity() << endl;
-//	//s.resize(10,'2');
-//	//cout << s << endl;
-//	//cout << s.size() << " " << s.capacity() << endl;
+//	cout << s.size() << " " << s.capacity() << endl;
+//	s.resize(5, 'a');
+//	cout << s << endl;
+//	cout << s.size() << " " << s.capacity() << endl;
+//	s.resize(10,'2');
+//	cout << s << endl;
+//	cout << s.size() << " " << s.capacity() << endl;
+//	cout << s[1] << "    " << s[5] << endl;
 //
 //	int cp = s.capacity();
 //	int i = 0;
@@ -227,8 +228,8 @@ using namespace std;
 //	s.insert(2, "wht");
 //	cout << s << endl;
 //
-//	/*s.erase(5);
-//	cout << s << endl;*/
+//	s.erase(5);
+//	cout << s << endl;
 //	s.erase(2, 3);//从第二个位置删除三个字符
 //	cout << s << endl;
 //	s.erase();
@@ -282,56 +283,58 @@ using namespace std;
 //}
 
 
-// int main()
-// {
-//     string s1("www.test");
-//     string s2("sfkaj.cpp");
-//     string s3("test.c");
-//     string s4("s4.cpp.zip");
+ //int main()
+ //{
+ //    string s1("www.test");
+ //    string s2("sfkaj.cpp");
+ //    string s3("test.c");
+ //    string s4("s4.cpp.zip");
 
 
-//     //find 寻找某个字符的下标位置，找不到返回string::npos  size_t npos = -1;
-//     size_t pos1 = s1.find('.');
-//     if(pos1!=string::npos)
-//     {
-//         //substr()是C++语言函数，主要功能是复制子字符串，要求从指定位置开始，并具有指定的长度
-//         cout<<s1.substr(pos1)<<endl;
-//     }
-//     size_t pos2 = s2.find('.');
-//     if(pos2!=string::npos)
-//     {
-//         cout<<s2.substr(pos2)<<endl;
-//     }
-//     size_t pos3 = s3.find('.');
-//     if(pos3!=string::npos)
-//     {
-//         cout<<s3.substr(pos3)<<endl;
-//     }
+ //    //find 寻找某个字符的下标位置，找不到返回string::npos  size_t npos = -1;
+ //    size_t pos1 = s1.find('.');
+ //    if(pos1!=string::npos)
+ //    {
+ //        //substr()是C++语言函数，主要功能是复制子字符串，要求从指定位置开始，并具有指定的长度
+ //        cout<<s1.substr(pos1)<<endl;
+ //    }
+ //    size_t pos2 = s2.find('.');
+ //    if(pos2!=string::npos)
+ //    {
+ //        cout<<s2.substr(pos2)<<endl;
+ //    }
+ //    size_t pos3 = s3.find('.');
+ //    if(pos3!=string::npos)
+ //    {
+ //        cout<<s3.substr(pos3)<<endl;
+ //    }
 
-//     //rfind是从后往前找
-//     size_t pos4 = s4.rfind('.');
-//     if(pos4!=string::npos)
-//     {
-//         cout<<s4.substr(pos4)<<endl;
-//     }
+ //    //rfind是从后往前找
+ //    size_t pos4 = s4.rfind('.');
+ //    if(pos4!=string::npos)
+ //    {
+ //        cout<<s4.substr(pos4)<<endl;
+ //    }
 
-//     //协议  域名  资源名称
-//     string url("https://github.com/chenran2022?tab=repositories");
-//     //分离url  协议  域名  资源名称
-//     size_t i1=url.find(':');
-//     if(i1!=string::npos)
-//     {
-//         cout<<url.substr(0,i1)<<endl;
-//     }
-//     size_t i2=url.find('/',i1+3);
-//     cout<<i1<<"   "<<i2<<endl;
-//     if(i2!=string::npos)
-//     {
-//         cout<<url.substr(i1+3,i2-(i1+3))<<endl;;
-//     }
-//     cout<<url.substr(i2+1)<<endl;
-//     return 0;
-// }
+ //    //协议  域名  资源名称
+ //    string url("https://github.com/chenran2022?tab=repositories");
+ //    //分离url  协议  域名  资源名称
+ //    size_t i1=url.find(':');
+ //    if(i1!=string::npos)
+ //    {
+ //        cout<<url.substr(0,i1)<<endl;
+ //    }
+ //    size_t i2=url.find('/',i1+3);
+ //    cout<<i1<<"   "<<i2<<endl;
+ //    if(i2!=string::npos)
+ //    {
+ //        cout<<url.substr(i1+3,i2-(i1+3))<<endl;;
+ //    }
+ //    string tmp = url.substr(i1 + 3, i2 - (i1 + 3));
+ //    cout << tmp << endl;
+ //    cout<<url.substr(i2+1)<<endl;
+ //    return 0;
+ //}
 
 
 // int main()
@@ -359,7 +362,7 @@ using namespace std;
 //     string s;
 //     //cin>>s; //cin和scanf  遇到空白字符（空格、tab、换行）就停止
 //     getline(cin,s);//遇到换行结束
-  
+
 //     size_t pos = s.rfind(' ');
 //     cout<<s.size()-(pos+1)<<endl;
 //     return 0;
@@ -414,68 +417,68 @@ namespace cr
 {
     class string
     {
-        public: 
-            // string():_str(nullptr)
-            // {
+    public:
+         /*string():_str(nullptr)
+         {
 
-            // }
-            // string():_str(new char[1])
-            // {
-            //     _str[0]='\0';
-            // }
+         }*/
+         /*string():_str(new char[1])
+         {
+             _str[0]='\0';
+         }*/  //全缺省可以省去
 
-            // string(char* str):_str(new char[strlen(str+1)])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
-            // {
-            //     strcpy(_str,str);
-            // }
-            string(char* str=""):_str(new char[strlen(str+1)])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
-            {
-                strcpy(_str,str);
-            }
-            
-            string(const string& str):_str(new char[strlen(str.len)])
-            {
+         //string(char* str):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+         //{
+         //    strcpy(_str,str);
+         //}
+        string(const char* str = ""):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+        {
+            strcpy(_str, str);
+        }
 
-            }
-            ~string()
-            {
-                delete[] _str;
-                _str= nullptr;
-            }
-            size_t size()
-            {
-                return strlen(_str);
-                // strlen是直接解引用找'\0', 当_str为空指针的时候，就会报错, 所以默认构造函数要存一个\0
-            }
-            char& operator[](size_t i)
-            {
-                return _str[i];
-            }
-            const char* c_str()
-            {
-                return _str;
-            }
-        private:
-            char* _str;
+        string(const string& str):_str(new char[strlen(str._str)+1])
+        {
+			strcpy(_str, str._str);
+        }
+        ~string()
+        {
+            delete[] _str;
+            _str = nullptr;
+        }
+        size_t size()
+        {
+            return strlen(_str);
+            //strlen是直接解引用找'\0', 当_str为空指针的时候，就会报错, 所以默认构造函数要存一个\0
+        }
+        char& operator[](size_t i)
+        {
+            return _str[i];
+        }
+        const char* c_str()
+        {
+            return _str;
+        }
+    private:
+        char* _str;
     };
     void test1()
     {
         string s1("hello");
         string s2;
-        for(size_t i=0;i<s1.size();++i)
+        for (size_t i = 0; i < s1.size(); ++i)
         {
-            s1[i]+=1; 
-            
-            cout<<s1[i]<<"  ";
+            s1[i] += 1;
+
+            cout << s1[i] << "  ";
         }
-        cout<<endl;
-        for(size_t i=0;i<s2.size();++i)
+        cout << endl;
+        for (size_t i = 0; i < s2.size(); ++i)
         {
-            s2[i]= s1[i]; 
-            
-            cout<<s2[i]<<"  ";
+            s2[i] = s1[i];
+
+            cout << s2[i] << "  ";
         }
-        cout<<endl;
+        cout << endl;
 
     }
 
@@ -483,13 +486,13 @@ namespace cr
     {
         string s1("hello");
         string s2(s1);  //浅拷贝会造成在析构函数里重复释放同一块空间
-        cout<<s1.c_str()<<endl;
-        cout<<s2.c_str()<<endl;
+        cout << s1.c_str() << endl;
+        cout << s2.c_str() << endl;
     }
 }
 int main()
 {
-    // cr::test1();
+     //cr::test1();
     cr::test2();
     return 0;
 }
