@@ -193,6 +193,8 @@ using namespace std;
 //	//cout << "size" << s.size() << endl;
 //
 //	//s.resize(100);//修改size,capacity不够也会增大capacity
+//	//如果n大于当前的容器大小，则通过在容器结尾插入(inserting)适合数量的元素使得整个容器大小达到n。
+//	//且如果给出val，插入的新元素全为val，否则，执行默认构造函数。
 //	//cout << s.size() << " " << s.capacity() << endl;
 //	//s.resize(5, 'a');
 //	//cout << s << endl;
