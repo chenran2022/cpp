@@ -413,86 +413,312 @@ using namespace std;
 // }
 
 
+//namespace cr
+//{
+//    class string
+//    {
+//    public:
+//         /*string():_str(nullptr)
+//         {
+//
+//         }*/
+//         /*string():_str(new char[1])
+//         {
+//             _str[0]='\0';
+//         }*/  //全缺省可以省去
+//
+//         //string(char* str):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+//         //{
+//         //    strcpy(_str,str);
+//         //}
+//        string(const char* str = ""):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
+//        {
+//            strcpy(_str, str);
+//        }
+//
+//        string(const string& str):_str(new char[strlen(str._str)+1])
+//        {
+//			strcpy(_str, str._str);
+//        }
+//        ~string()
+//        {
+//            delete[] _str;
+//            _str = nullptr;
+//        }
+//        size_t size()
+//        {
+//            return strlen(_str);
+//            //strlen是直接解引用找'\0', 当_str为空指针的时候，就会报错, 所以默认构造函数要存一个\0
+//        }
+//        char& operator[](size_t i)
+//        {
+//            return _str[i];
+//        }
+//        const char* c_str()
+//        {
+//            return _str;
+//        }
+//        /*void operator=(const string& str)
+//        {
+//            if (this != &str)//防止自己给自己赋值
+//            {
+//                delete[] _str;
+//                _str = new char[(strlen(str._str) + 1)];
+//                strcpy(_str, str._str);
+//            }
+//        }*/
+//        string& operator=(const string& str)
+//        {
+//            if (this != &str)//防止自己给自己赋值
+//            {
+//                delete[] _str;
+//                _str = new char[(strlen(str._str) + 1)];
+//                strcpy(_str, str._str);
+//            }
+//            return *this;
+//        }
+//    private:
+//        char* _str;
+//    };
+//    void test1()
+//    {
+//        string s1("hello");
+//        string s2;
+//        for (size_t i = 0; i < s1.size(); ++i)
+//        {
+//            s1[i] += 1;
+//
+//            cout << s1[i] << "  ";
+//        }
+//        cout << endl;
+//        for (size_t i = 0; i < s2.size(); ++i)
+//        {
+//            s2[i] = s1[i];
+//
+//            cout << s2[i] << "  ";
+//        }
+//        cout << endl;
+//
+//    }
+//
+//    void test2()
+//    {
+//        string s1("hello");
+//        string s2(s1);  //浅拷贝会造成在析构函数里重复释放同一块空间
+//        cout << s1.c_str() << endl;
+//        cout << s2.c_str() << endl;
+//        string s3("world11");
+//        s2 = s1 = s3;
+//        cout << s2.c_str() << endl;
+//    }
+//}
+//int main()
+//{
+//     //cr::test1();
+//    cr::test2();
+//    return 0;
+//}
+
+
+
+
+//实现增删查改的string
+#include<assert.h>
 namespace cr
 {
-    class string
-    {
-    public:
-         /*string():_str(nullptr)
-         {
-
-         }*/
-         /*string():_str(new char[1])
-         {
-             _str[0]='\0';
-         }*/  //全缺省可以省去
-
-         //string(char* str):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
-         //{
-         //    strcpy(_str,str);
-         //}
-        string(const char* str = ""):_str(new char[strlen(str)+1])  //+1 是因为string对象中存储指针，指针指向的数组中存储字符，字符最后必须保留\0
-        {
-            strcpy(_str, str);
-        }
-
-        string(const string& str):_str(new char[strlen(str._str)+1])
-        {
+	class string
+	{
+	public:
+		typedef char* iterator;
+		iterator begin()
+		{
+			return _str;
+		}
+		iterator end()
+		{
+			return _str + _size;
+		}
+		friend istream& operator>>(istream& cin, string& str);
+		string(const char* str = "") :_str(new char[strlen(str) + 1])
+		{
+			_size = strlen(str);	//已经有多少个有效字符
+			_capacity = _size;    //能存多少个有效字符，'\0'不是又是有效字符，所以不+1
+			strcpy(_str, str);
+		}
+		string(const string& str):_str(new char[strlen(str._str) +1])
+		{
 			strcpy(_str, str._str);
-        }
-        ~string()
-        {
-            delete[] _str;
-            _str = nullptr;
-        }
-        size_t size()
-        {
-            return strlen(_str);
-            //strlen是直接解引用找'\0', 当_str为空指针的时候，就会报错, 所以默认构造函数要存一个\0
-        }
-        char& operator[](size_t i)
-        {
-            return _str[i];
-        }
-        const char* c_str()
-        {
-            return _str;
-        }
-    private:
-        char* _str;
-    };
-    void test1()
-    {
-        string s1("hello");
-        string s2;
-        for (size_t i = 0; i < s1.size(); ++i)
-        {
-            s1[i] += 1;
+		}
+		
+		~string()
+		{
+			delete[] _str;
+			_str = nullptr;
+			_size = _capacity = 0;
+		}
+		size_t size()const
+		{
+			return _size;
+		}
+		size_t capacity()const
+		{
+			return _capacity;
+		}
+		const char* c_str() const
+		{
+			return _str;
+		}
+		char& operator[](size_t i)
+		{
+			assert(i < _size);
+			return _str[i];
+		}
+		const char& operator[](size_t i) const 
+		{
+			assert(i < _size);
+			return _str[i];
+		}
+		string& operator=(const string& str)
+		{
+			if (this != &str)
+			{
+				delete[] _str;
+				_str = new char[str.size() + 1];
+				strcpy(_str, str._str);
+			}
+			return *this;
+		}
+		void reserve(size_t n)
+		{
+			if (n > _capacity)
+			{
+				char* newstr = new char[n + 1];
+				strcpy(newstr, _str);
+				delete[] _str;
+				_str = newstr;
+				_capacity = n;
+			}
+		}
+		void push_back(const char ch)
+		{
+			//空间满了进行增容
+			if (_size == _capacity)
+			{
+				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
+				/*char* newstr = new char[newcapacity + 1];
+				strcpy(newstr, _str);
+				delete[] _str;
+				_str = newstr;
+				_capacity = newcapacity;*/
+				reserve(newcapacity);
+			}
+			_str[_size] = ch;
+			_size++;
+			_str[_size] = '\0';  //注意！！！
+		}
+		void append(const char* str)
+		{
+			//空间不够了进行增容
+			int len = strlen(str);
+			if (_size + len > _capacity)
+			{
+				size_t newcapacity = _size + len;
+				/*char* newstr = new char[newcapacity + 1];
+				strcpy(newstr, _str);
+				delete[] _str;
+				_str = newstr;
+				_capacity = newcapacity;*/
+				reserve(newcapacity);
 
-            cout << s1[i] << "  ";
-        }
-        cout << endl;
-        for (size_t i = 0; i < s2.size(); ++i)
-        {
-            s2[i] = s1[i];
+			}
+			strcpy(_str + _size, str);
+			_size += len;
+		}
+		string& operator+=(const char ch)
+		{
+			this->push_back(ch);
+			return *this;
+		}
+		string& operator+=(const char* str)
+		{
+			
+			this->append(str);
+			return *this;
+		}
+		void insert(size_t pos, char ch);
+		void insert(size_t pos, const char* str);
+		void erase(size_t pos, size_t len = npos);
+		size_t find(char ch, size_t pos = 0);
+		size_t find(const char* str, size_t pos = 0);
+	private:
+		char* _str;
+		size_t _size;		//已经有多少个有效字符
+		size_t _capacity;	//能存多少个有效字符，'\0'不是又是有效字符
+		static size_t npos;
 
-            cout << s2[i] << "  ";
-        }
-        cout << endl;
-
-    }
-
-    void test2()
-    {
-        string s1("hello");
-        string s2(s1);  //浅拷贝会造成在析构函数里重复释放同一块空间
-        cout << s1.c_str() << endl;
-        cout << s2.c_str() << endl;
-    }
+	};
+	static size_t npos = -1;
+	/*istream& operator>>(istream& cin, string& str)
+	{
+		if (*(str._str) != '\0')
+		{
+			delete[] str._str;
+			str._size = 0;
+		}
+		cin >> str._str;
+		str._size = sizeof(strlen(str._str) + 1);
+		return cin;
+	}*/
+	ostream& operator<<(ostream& cout, const string& str)
+	{
+		//cout << str.c_str();
+		int i = 0;
+		size_t size = str.size();
+		for (i = 0; i < size; ++i)
+		{
+			cout << str[i];
+		}
+		return cout;
+	}
 }
 int main()
 {
-     //cr::test1();
-    cr::test2();
-    return 0;
+	cr::string s1("hello");
+	//cin >> s1;
+	cout << s1 << endl;
+
+	//三种遍历方式
+	int i = 0;
+	for (i = 0; i < s1.size(); ++i)
+	{
+		cout << s1[i];
+	}
+	cout << endl;
+
+	//iterator
+	cr::string::iterator it = s1.begin();
+	while (it != s1.end())
+	{
+		cout << *it;
+		++it;
+	}
+	cout << endl;
+
+	//范围for是由迭代器支持的，也就是说这段代码最终会被编辑器替换成迭代器
+	//iterator begin()	end()
+	for (auto au : s1)
+	{
+		cout << au;
+	}
+	cout << endl;
+
+
+
+	s1.push_back('s');
+	cout << s1 << endl;
+	s1.append("fsafsaf");
+	cout << s1 << endl;
+	s1 += "23131";
+	cout << s1 << endl;
+	return 0;
 }
