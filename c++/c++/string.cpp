@@ -645,8 +645,63 @@ namespace cr
 			this->append(str);
 			return *this;
 		}
-		void insert(size_t pos, char ch);
-		void insert(size_t pos, const char* str);
+		void insert(size_t pos, char ch)  //下标为pos
+		{
+			//assert(pos < _size);	//不能在最后一位插入
+			assert(pos <= _size);
+			if (_size == _capacity)
+			{
+				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
+				reserve( newcapacity );
+			}
+			if (pos == _size)
+			{
+				_str[pos + 1] = '\0';
+			}
+			int n = _size;
+			while (n > pos)
+			{
+				_str[n] = _str[n-1];
+				--n;
+			}
+			_str[pos] = ch;
+			_size++;
+			
+		}
+		void insert(size_t pos, const char* str)	//下标为pos
+		{
+			size_t len = strlen(str);
+			assert(pos <= _size);
+			if ((_size + len) >= _capacity)
+			{
+				size_t newcapacity = _size + strlen(str);
+				reserve(newcapacity);
+			}
+			if (pos == _size)
+			{
+				*this += str;
+			}
+			else
+			{
+				int n = _size;
+				while (n > pos)
+				{
+					_str[n + len] = _str[n];
+					--n;
+				}
+
+				//把str加到_str中，不能用strcpy，因为strcpy会拷贝\0
+				int i = 0;
+				while (i < len)
+				{
+					_str[n] = str[i];
+					n++;
+					i++;
+				}	
+				_size += len;
+			}
+			
+		}
 		void erase(size_t pos, size_t len = npos);
 		size_t find(char ch, size_t pos = 0);
 		size_t find(const char* str, size_t pos = 0);
@@ -683,42 +738,63 @@ namespace cr
 }
 int main()
 {
-	cr::string s1("hello");
-	//cin >> s1;
-	cout << s1 << endl;
+	//cr::string s1("hello");
+	////cin >> s1;
+	//cout << s1 << endl;
 
-	//三种遍历方式
-	int i = 0;
-	for (i = 0; i < s1.size(); ++i)
-	{
-		cout << s1[i];
-	}
-	cout << endl;
+	////三种遍历方式
+	//int i = 0;
+	//for (i = 0; i < s1.size(); ++i)
+	//{
+	//	cout << s1[i];
+	//}
+	//cout << endl;
 
-	//iterator
-	cr::string::iterator it = s1.begin();
-	while (it != s1.end())
-	{
-		cout << *it;
-		++it;
-	}
-	cout << endl;
+	////iterator
+	//cr::string::iterator it = s1.begin();
+	//while (it != s1.end())
+	//{
+	//	cout << *it;
+	//	++it;
+	//}
+	//cout << endl;
 
-	//范围for是由迭代器支持的，也就是说这段代码最终会被编辑器替换成迭代器
-	//iterator begin()	end()
-	for (auto au : s1)
-	{
-		cout << au;
-	}
-	cout << endl;
+	////范围for是由迭代器支持的，也就是说这段代码最终会被编辑器替换成迭代器
+	////iterator begin()	end()
+	//for (auto au : s1)
+	//{
+	//	cout << au;
+	//}
+	//cout << endl;
 
 
 
-	s1.push_back('s');
-	cout << s1 << endl;
-	s1.append("fsafsaf");
-	cout << s1 << endl;
-	s1 += "23131";
-	cout << s1 << endl;
+	//s1.push_back('s');
+	//cout << s1 << endl;
+	//s1.append("fsafsaf");
+	//cout << s1 << endl;
+	//s1 += "23131";
+	//cout << s1 << endl;
+
+
+	cr::string ss1("erji");
+	cout << ss1 << endl;
+	ss1.insert(1, 'w');
+	cout << ss1 << endl;
+	ss1.insert(0, '1');
+	cout << ss1 << endl;
+	ss1.insert(6, '4');
+	cout << ss1 << endl;
+	ss1.insert(7, "woshi");
+	cout << ss1 << endl;
+	ss1.insert(0, "niba");
+	cout << ss1 << endl;
+	ss1.insert(5, "521");
+	cout << ss1 << endl;
+
+
+	/*string s1("woshida");
+	s1.insert(1, 1,'2');
+	cout << s1 << endl;*/
 	return 0;
 }
