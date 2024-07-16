@@ -545,11 +545,19 @@ namespace cr
 			_capacity = _size;    //能存多少个有效字符，'\0'不是又是有效字符，所以不+1
 			strcpy(_str, str);
 		}
-		string(const string& str):_str(new char[strlen(str._str) +1])
+
+		//深拷贝  —— 传统写法
+		/*string(const string& str):_str(new char[strlen(str._str) +1])
 		{
 			strcpy(_str, str._str);
-		}
+		}*/
 		
+		//深拷贝—— 现代写法
+		string(const string& str) :_str(nullptr)
+		{
+			string tmp(str._str);
+			swap(_str, tmp._str);
+		}
 		~string()
 		{
 			delete[] _str;
@@ -578,7 +586,9 @@ namespace cr
 			assert(i < _size);
 			return _str[i];
 		}
-		string& operator=(const string& str)
+
+		//赋值运算符重载——传统写法
+		/*string& operator=(const string& str)
 		{
 			if (this != &str)
 			{
@@ -587,8 +597,23 @@ namespace cr
 				strcpy(_str, str._str);
 			}
 			return *this;
+		}*/
+
+		//赋值运算符重载——现代写法  --简洁
+		string& operator=(string& str)
+		{
+			//1.
+			/*if (this != &str)
+			{
+				string tmp(str._str);
+				swap(_str, tmp._str);
+			}*/
+
+			//2.更简洁
+			swap(_str, str._str);
+			return *this;
 		}
-		void reserve(size_t n)
+		void reserve(size_t n)		//将容量扩展到n
 		{
 			if (n > _capacity)
 			{
@@ -597,6 +622,29 @@ namespace cr
 				delete[] _str;
 				_str = newstr;
 				_capacity = n;
+			}
+		}
+
+		void resize(size_t n, char ch = '\0')   //将扩大的空间内容用字符ch填补
+		{
+			if (n < _size)
+			{
+				_size = n;
+				_str[n] = '\0';
+			}
+			else
+			{
+				if (n > _capacity)
+				{
+					reserve(n);
+				}
+				int i = _size;
+				for (; i < n; i++)
+				{
+					_str[i] = ch;
+				}
+				_size = n;
+				_str[n] = '\0';
 			}
 		}
 		void push_back(const char ch)
@@ -645,7 +693,7 @@ namespace cr
 			this->append(str);
 			return *this;
 		}
-		void insert(size_t pos, char ch)  //下标为pos
+		string& insert(size_t pos, char ch)  //下标为pos
 		{
 			//assert(pos < _size);	//不能在最后一位插入
 			assert(pos <= _size);
@@ -666,9 +714,10 @@ namespace cr
 			}
 			_str[pos] = ch;
 			_size++;
+			return *this;
 			
 		}
-		void insert(size_t pos, const char* str)	//下标为pos
+		string& insert(size_t pos, const char* str)	//下标为pos
 		{
 			size_t len = strlen(str);
 			assert(pos <= _size);
@@ -690,40 +739,142 @@ namespace cr
 					--n;
 				}
 
-				//把str加到_str中，不能用strcpy，因为strcpy会拷贝\0
-				int i = 0;
+				//把str加到_str中，不能用strcpy，因为strcpy会拷贝\0 ,可以使用strncpy指定个数
+
+				/*int i = 0;
 				while (i < len)
 				{
 					_str[n] = str[i];
 					n++;
 					i++;
-				}	
+				}*/
+				strncpy(_str + n, str, len);
 				_size += len;
+				return *this;  
 			}
 			
 		}
-		void erase(size_t pos, size_t len = npos);
-		size_t find(char ch, size_t pos = 0);
-		size_t find(const char* str, size_t pos = 0);
+		void erase(size_t pos, size_t len = npos)
+		{
+			assert(pos < _size);
+			if (len >= (_size - pos))  //删除的个数大于等于pos后所有有效字符个数
+			{
+				_str[pos] = '\0';
+				_size = pos;
+			}
+			else
+			{
+				size_t i = pos;
+				for (; i <=(_size-len); i++)
+				{
+					_str[i] = _str[i + len];
+
+				}
+				_size -= len;
+			}
+		}
+		size_t find(char ch, size_t pos = 0)
+		{
+			
+			for (size_t i = pos; i < _size; i++)
+			{
+				if (ch == _str[i])
+					return i;
+			}
+			return npos;
+		}
+		size_t find(const char* str, size_t pos = 0)
+		{
+			/*int len = strlen(str);
+			for (size_t i = pos; i <= _size - len; i++)
+			{
+				if (_str[i] == str[0])
+				{
+					int j = 1;
+					for (j = 1; j < len; j++)
+					{
+						if (_str[i + j] != str[j])
+							break;
+					}
+					if (j == len)
+						return i;
+				}
+			}
+			return npos;*/
+
+			char* ch = strstr(_str + pos, str);
+			if (ch == nullptr)
+			{
+				return npos;
+			}
+			else
+			{
+				return ch - _str;
+			}
+		}
+
+		bool operator<(const string& str)
+		{
+			//_str<str._str
+			return strcmp(_str, str._str) < 0;
+		}
+		bool operator==(const string& str)
+		{
+			return strcmp(_str, str._str) == 0;
+		}
+		/*bool operator>(const string& str)
+		{
+			return strcmp(_str, str._str) > 0;
+		}*/
+		bool operator>(const string& str)
+		{
+			return !(*this <= str);
+		}
+		bool operator<=(const string& str)
+		{
+			//return (strcmp(_str, str._str) == 0)||(strcmp(_str, str._str) > 0);
+			return *this < str || *this == str;
+		}
+		bool operator>=(const string& str)
+		{
+			return !(*this < str);
+		}
+		bool operator!=(const string& str)
+		{
+			return !(*this == str);
+		}
 	private:
 		char* _str;
 		size_t _size;		//已经有多少个有效字符
-		size_t _capacity;	//能存多少个有效字符，'\0'不是又是有效字符
+		size_t _capacity;	//能存多少个有效字符，'\0'不是有效字符
 		static size_t npos;
 
 	};
-	static size_t npos = -1;
-	/*istream& operator>>(istream& cin, string& str)
+	size_t string::npos = -1;
+	istream& operator>>(istream& cin, string& str)
 	{
-		if (*(str._str) != '\0')
+		if (str._size != 0)  //默认的cin会把原有值覆盖掉
 		{
-			delete[] str._str;
+			/*delete[] str._str;*/  //不能这么释放空间，因为后面会对_str进行赋值，会造成内存泄漏
 			str._size = 0;
 		}
-		cin >> str._str;
-		str._size = sizeof(strlen(str._str) + 1);
+		while (1)
+		{
+			char ch;
+			//cin >> ch;  //cin会自动把空白字符过滤掉，认为输入下一个变量，所以cin不会接收到空白字符
+			ch = cin.get();  //可以接受空白字符
+			if (ch == ' ' || ch == '\n' || ch == '\t')
+			{
+				break;
+			}
+			else
+			{
+				str += ch;
+			}
+		}
+	
 		return cin;
-	}*/
+	}
 	ostream& operator<<(ostream& cout, const string& str)
 	{
 		//cout << str.c_str();
@@ -777,7 +928,7 @@ int main()
 	//cout << s1 << endl;
 
 
-	cr::string ss1("erji");
+	/*cr::string ss1("erji");
 	cout << ss1 << endl;
 	ss1.insert(1, 'w');
 	cout << ss1 << endl;
@@ -790,11 +941,29 @@ int main()
 	ss1.insert(0, "niba");
 	cout << ss1 << endl;
 	ss1.insert(5, "521");
-	cout << ss1 << endl;
+	cout << ss1 << endl;*/
 
 
-	/*string s1("woshida");
-	s1.insert(1, 1,'2');
-	cout << s1 << endl;*/
+	//cr::string s1("woshida");
+	//s1.insert(1,'2');
+	//cout << s1 << endl;
+	//s1.resize(10, 'w');
+	//cout << s1 << endl;
+	////s1.resize(1, 'w');
+	////cout << s1 << endl;
+	//s1.erase(6, 10);
+	//cout << s1 << endl;
+
+
+	/*cr::string s1("woshishuaige");
+	cout << s1.find('i', s1.find('i')+1) << endl;
+	cout << s1.find("ge", s1.find('i') + 1) << endl;*/
+
+	cr::string s2("woshi");
+	string s3("oumaga");
+	cin >> s2;
+	cout << s2 << endl;
+	cin >> s3; //string会把原先的内容覆盖掉
+	cout << s3 << endl;
 	return 0;
 }
