@@ -959,11 +959,11 @@ int main()
 	cout << s1.find('i', s1.find('i')+1) << endl;
 	cout << s1.find("ge", s1.find('i') + 1) << endl;*/
 
-	cr::string s2("woshi");
-	string s3("oumaga");
-	cin >> s2;
-	cout << s2 << endl;
-	cin >> s3; //string会把原先的内容覆盖掉
-	cout << s3 << endl;
+	// cr::string s2("woshi");
+	// string s3("oumaga");
+	// cin >> s2;
+	// cout << s2 << endl;
+	// cin >> s3; //string会把原先的内容覆盖掉
+	// cout << s3 << endl;
 	return 0;
 }
