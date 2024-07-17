@@ -521,449 +521,463 @@ using namespace std;
 
 
 
-
-//实现增删查改的string
-#include<assert.h>
-namespace cr
-{
-	class string
-	{
-	public:
-		typedef char* iterator;
-		iterator begin()
-		{
-			return _str;
-		}
-		iterator end()
-		{
-			return _str + _size;
-		}
-		friend istream& operator>>(istream& cin, string& str);
-		string(const char* str = "") :_str(new char[strlen(str) + 1])
-		{
-			_size = strlen(str);	//已经有多少个有效字符
-			_capacity = _size;    //能存多少个有效字符，'\0'不是又是有效字符，所以不+1
-			strcpy(_str, str);
-		}
-
-		//深拷贝  —— 传统写法
-		/*string(const string& str):_str(new char[strlen(str._str) +1])
-		{
-			strcpy(_str, str._str);
-		}*/
-		
-		//深拷贝—— 现代写法
-		string(const string& str) :_str(nullptr)
-		{
-			string tmp(str._str);
-			swap(_str, tmp._str);
-		}
-		~string()
-		{
-			delete[] _str;
-			_str = nullptr;
-			_size = _capacity = 0;
-		}
-		size_t size()const
-		{
-			return _size;
-		}
-		size_t capacity()const
-		{
-			return _capacity;
-		}
-		const char* c_str() const
-		{
-			return _str;
-		}
-		char& operator[](size_t i)
-		{
-			assert(i < _size);
-			return _str[i];
-		}
-		const char& operator[](size_t i) const 
-		{
-			assert(i < _size);
-			return _str[i];
-		}
-
-		//赋值运算符重载——传统写法
-		/*string& operator=(const string& str)
-		{
-			if (this != &str)
-			{
-				delete[] _str;
-				_str = new char[str.size() + 1];
-				strcpy(_str, str._str);
-			}
-			return *this;
-		}*/
-
-		//赋值运算符重载——现代写法  --简洁
-		string& operator=(string& str)
-		{
-			//1.
-			/*if (this != &str)
-			{
-				string tmp(str._str);
-				swap(_str, tmp._str);
-			}*/
-
-			//2.更简洁
-			swap(_str, str._str);
-			return *this;
-		}
-		void reserve(size_t n)		//将容量扩展到n
-		{
-			if (n > _capacity)
-			{
-				char* newstr = new char[n + 1];
-				strcpy(newstr, _str);
-				delete[] _str;
-				_str = newstr;
-				_capacity = n;
-			}
-		}
-
-		void resize(size_t n, char ch = '\0')   //将扩大的空间内容用字符ch填补
-		{
-			if (n < _size)
-			{
-				_size = n;
-				_str[n] = '\0';
-			}
-			else
-			{
-				if (n > _capacity)
-				{
-					reserve(n);
-				}
-				int i = _size;
-				for (; i < n; i++)
-				{
-					_str[i] = ch;
-				}
-				_size = n;
-				_str[n] = '\0';
-			}
-		}
-		void push_back(const char ch)
-		{
-			//空间满了进行增容
-			if (_size == _capacity)
-			{
-				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
-				/*char* newstr = new char[newcapacity + 1];
-				strcpy(newstr, _str);
-				delete[] _str;
-				_str = newstr;
-				_capacity = newcapacity;*/
-				reserve(newcapacity);
-			}
-			_str[_size] = ch;
-			_size++;
-			_str[_size] = '\0';  //注意！！！
-		}
-		void append(const char* str)
-		{
-			//空间不够了进行增容
-			int len = strlen(str);
-			if (_size + len > _capacity)
-			{
-				size_t newcapacity = _size + len;
-				/*char* newstr = new char[newcapacity + 1];
-				strcpy(newstr, _str);
-				delete[] _str;
-				_str = newstr;
-				_capacity = newcapacity;*/
-				reserve(newcapacity);
-
-			}
-			strcpy(_str + _size, str);
-			_size += len;
-		}
-		string& operator+=(const char ch)
-		{
-			this->push_back(ch);
-			return *this;
-		}
-		string& operator+=(const char* str)
-		{
-			
-			this->append(str);
-			return *this;
-		}
-		string& insert(size_t pos, char ch)  //下标为pos
-		{
-			//assert(pos < _size);	//不能在最后一位插入
-			assert(pos <= _size);
-			if (_size == _capacity)
-			{
-				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
-				reserve( newcapacity );
-			}
-			if (pos == _size)
-			{
-				_str[pos + 1] = '\0';
-			}
-			int n = _size;
-			while (n > pos)
-			{
-				_str[n] = _str[n-1];
-				--n;
-			}
-			_str[pos] = ch;
-			_size++;
-			return *this;
-			
-		}
-		string& insert(size_t pos, const char* str)	//下标为pos
-		{
-			size_t len = strlen(str);
-			assert(pos <= _size);
-			if ((_size + len) >= _capacity)
-			{
-				size_t newcapacity = _size + strlen(str);
-				reserve(newcapacity);
-			}
-			if (pos == _size)
-			{
-				*this += str;
-			}
-			else
-			{
-				int n = _size;
-				while (n > pos)
-				{
-					_str[n + len] = _str[n];
-					--n;
-				}
-
-				//把str加到_str中，不能用strcpy，因为strcpy会拷贝\0 ,可以使用strncpy指定个数
-
-				/*int i = 0;
-				while (i < len)
-				{
-					_str[n] = str[i];
-					n++;
-					i++;
-				}*/
-				strncpy(_str + n, str, len);
-				_size += len;
-				return *this;  
-			}
-			
-		}
-		void erase(size_t pos, size_t len = npos)
-		{
-			assert(pos < _size);
-			if (len >= (_size - pos))  //删除的个数大于等于pos后所有有效字符个数
-			{
-				_str[pos] = '\0';
-				_size = pos;
-			}
-			else
-			{
-				size_t i = pos;
-				for (; i <=(_size-len); i++)
-				{
-					_str[i] = _str[i + len];
-
-				}
-				_size -= len;
-			}
-		}
-		size_t find(char ch, size_t pos = 0)
-		{
-			
-			for (size_t i = pos; i < _size; i++)
-			{
-				if (ch == _str[i])
-					return i;
-			}
-			return npos;
-		}
-		size_t find(const char* str, size_t pos = 0)
-		{
-			/*int len = strlen(str);
-			for (size_t i = pos; i <= _size - len; i++)
-			{
-				if (_str[i] == str[0])
-				{
-					int j = 1;
-					for (j = 1; j < len; j++)
-					{
-						if (_str[i + j] != str[j])
-							break;
-					}
-					if (j == len)
-						return i;
-				}
-			}
-			return npos;*/
-
-			char* ch = strstr(_str + pos, str);
-			if (ch == nullptr)
-			{
-				return npos;
-			}
-			else
-			{
-				return ch - _str;
-			}
-		}
-
-		bool operator<(const string& str)
-		{
-			//_str<str._str
-			return strcmp(_str, str._str) < 0;
-		}
-		bool operator==(const string& str)
-		{
-			return strcmp(_str, str._str) == 0;
-		}
-		/*bool operator>(const string& str)
-		{
-			return strcmp(_str, str._str) > 0;
-		}*/
-		bool operator>(const string& str)
-		{
-			return !(*this <= str);
-		}
-		bool operator<=(const string& str)
-		{
-			//return (strcmp(_str, str._str) == 0)||(strcmp(_str, str._str) > 0);
-			return *this < str || *this == str;
-		}
-		bool operator>=(const string& str)
-		{
-			return !(*this < str);
-		}
-		bool operator!=(const string& str)
-		{
-			return !(*this == str);
-		}
-	private:
-		char* _str;
-		size_t _size;		//已经有多少个有效字符
-		size_t _capacity;	//能存多少个有效字符，'\0'不是有效字符
-		static size_t npos;
-
-	};
-	size_t string::npos = -1;
-	istream& operator>>(istream& cin, string& str)
-	{
-		if (str._size != 0)  //默认的cin会把原有值覆盖掉
-		{
-			/*delete[] str._str;*/  //不能这么释放空间，因为后面会对_str进行赋值，会造成内存泄漏
-			str._size = 0;
-		}
-		while (1)
-		{
-			char ch;
-			//cin >> ch;  //cin会自动把空白字符过滤掉，认为输入下一个变量，所以cin不会接收到空白字符
-			ch = cin.get();  //可以接受空白字符
-			if (ch == ' ' || ch == '\n' || ch == '\t')
-			{
-				break;
-			}
-			else
-			{
-				str += ch;
-			}
-		}
-	
-		return cin;
-	}
-	ostream& operator<<(ostream& cout, const string& str)
-	{
-		//cout << str.c_str();
-		int i = 0;
-		size_t size = str.size();
-		for (i = 0; i < size; ++i)
-		{
-			cout << str[i];
-		}
-		return cout;
-	}
-}
-int main()
-{
-	//cr::string s1("hello");
-	////cin >> s1;
-	//cout << s1 << endl;
-
-	////三种遍历方式
-	//int i = 0;
-	//for (i = 0; i < s1.size(); ++i)
-	//{
-	//	cout << s1[i];
-	//}
-	//cout << endl;
-
-	////iterator
-	//cr::string::iterator it = s1.begin();
-	//while (it != s1.end())
-	//{
-	//	cout << *it;
-	//	++it;
-	//}
-	//cout << endl;
-
-	////范围for是由迭代器支持的，也就是说这段代码最终会被编辑器替换成迭代器
-	////iterator begin()	end()
-	//for (auto au : s1)
-	//{
-	//	cout << au;
-	//}
-	//cout << endl;
-
-
-
-	//s1.push_back('s');
-	//cout << s1 << endl;
-	//s1.append("fsafsaf");
-	//cout << s1 << endl;
-	//s1 += "23131";
-	//cout << s1 << endl;
-
-
-	/*cr::string ss1("erji");
-	cout << ss1 << endl;
-	ss1.insert(1, 'w');
-	cout << ss1 << endl;
-	ss1.insert(0, '1');
-	cout << ss1 << endl;
-	ss1.insert(6, '4');
-	cout << ss1 << endl;
-	ss1.insert(7, "woshi");
-	cout << ss1 << endl;
-	ss1.insert(0, "niba");
-	cout << ss1 << endl;
-	ss1.insert(5, "521");
-	cout << ss1 << endl;*/
-
-
-	//cr::string s1("woshida");
-	//s1.insert(1,'2');
-	//cout << s1 << endl;
-	//s1.resize(10, 'w');
-	//cout << s1 << endl;
-	////s1.resize(1, 'w');
-	////cout << s1 << endl;
-	//s1.erase(6, 10);
-	//cout << s1 << endl;
-
-
-	/*cr::string s1("woshishuaige");
-	cout << s1.find('i', s1.find('i')+1) << endl;
-	cout << s1.find("ge", s1.find('i') + 1) << endl;*/
-
-	// cr::string s2("woshi");
-	// string s3("oumaga");
-	// cin >> s2;
-	// cout << s2 << endl;
-	// cin >> s3; //string会把原先的内容覆盖掉
-	// cout << s3 << endl;
-	return 0;
-}
+//
+////实现增删查改的string
+//#include<assert.h>
+//namespace cr
+//{
+//	class string
+//	{
+//	public:
+//		typedef char* iterator;
+//		iterator begin()
+//		{
+//			return _str;
+//		}
+//		iterator end()
+//		{
+//			return _str + _size;
+//		}
+//		friend istream& operator>>(istream& cin, string& str);
+//		string(const char* str = "") :_str(new char[strlen(str) + 1])
+//		{
+//			_size = strlen(str);	//已经有多少个有效字符
+//			_capacity = _size;    //能存多少个有效字符，'\0'不是又是有效字符，所以不+1
+//			strcpy(_str, str);
+//		}
+//
+//		//深拷贝  —— 传统写法
+//		/*string(const string& str):_str(new char[strlen(str._str) +1])
+//		{
+//			strcpy(_str, str._str);
+//		}*/
+//		
+//		//深拷贝—— 现代写法
+//		string(const string& str) :_str(nullptr),_size(0),_capacity(0)
+//		{
+//			string tmp(str._str);
+//			this->Swap(tmp);
+//		}
+//		~string()
+//		{
+//			delete[] _str;
+//			_str = nullptr;
+//			_size = _capacity = 0;
+//		}
+//		size_t size()const
+//		{
+//			return _size;
+//		}
+//		size_t capacity()const
+//		{
+//			return _capacity;
+//		}
+//		const char* c_str() const
+//		{
+//			return _str;
+//		}
+//		char& operator[](size_t i)
+//		{
+//			assert(i < _size);
+//			return _str[i];
+//		}
+//		const char& operator[](size_t i) const 
+//		{
+//			assert(i < _size);
+//			return _str[i];
+//		}
+//
+//		//赋值运算符重载——传统写法
+//		/*string& operator=(const string& str)
+//		{
+//			if (this != &str)
+//			{
+//				delete[] _str;
+//				_str = new char[str.size() + 1];
+//				strcpy(_str, str._str);
+//			}
+//			return *this;
+//		}*/
+//
+//		//赋值运算符重载——现代写法  --简洁
+//		string& operator=(string str)
+//		{
+//			//1.
+//			//if (this != &str)
+//			//{
+//			//	string tmp(str);  //已经实现了拷贝构造
+//			//	this->Swap(tmp);
+//			//}
+//
+//			//2.更简洁
+//			this->Swap(str);
+//			return *this;
+//		}
+//		void Swap(string& s)
+//		{
+//			swap(_str,s._str);
+//			swap(_size, s._size);
+//			swap(_capacity, s._capacity);
+//			
+//		}
+//		void reserve(size_t n)		//将容量扩展到n
+//		{
+//			if (n > _capacity)
+//			{
+//				char* newstr = new char[n + 1];
+//				strcpy(newstr, _str);
+//				delete[] _str;
+//				_str = newstr;
+//				_capacity = n;
+//			}
+//		}
+//
+//		void resize(size_t n, char ch = '\0')   //将扩大的空间内容用字符ch填补
+//		{
+//			if (n < _size)
+//			{
+//				_size = n;
+//				_str[n] = '\0';
+//			}
+//			else
+//			{
+//				if (n > _capacity)
+//				{
+//					reserve(n);
+//				}
+//				int i = _size;
+//				for (; i < n; i++)
+//				{
+//					_str[i] = ch;
+//				}
+//				_size = n;
+//				_str[n] = '\0';
+//			}
+//		}
+//		void push_back(const char ch)
+//		{
+//			//空间满了进行增容
+//			if (_size == _capacity)
+//			{
+//				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
+//				/*char* newstr = new char[newcapacity + 1];
+//				strcpy(newstr, _str);
+//				delete[] _str;
+//				_str = newstr;
+//				_capacity = newcapacity;*/
+//				reserve(newcapacity);
+//			}
+//			_str[_size] = ch;
+//			_size++;
+//			_str[_size] = '\0';  //注意！！！
+//		}
+//		void append(const char* str)
+//		{
+//			//空间不够了进行增容
+//			int len = strlen(str);
+//			if (_size + len > _capacity)
+//			{
+//				size_t newcapacity = _size + len;
+//				/*char* newstr = new char[newcapacity + 1];
+//				strcpy(newstr, _str);
+//				delete[] _str;
+//				_str = newstr;
+//				_capacity = newcapacity;*/
+//				reserve(newcapacity);
+//
+//			}
+//			strcpy(_str + _size, str);
+//			_size += len;
+//		}
+//		string& operator+=(const char ch)
+//		{
+//			this->push_back(ch);
+//			return *this;
+//		}
+//		string& operator+=(const char* str)
+//		{
+//			
+//			this->append(str);
+//			return *this;
+//		}
+//		string& insert(size_t pos, char ch)  //下标为pos
+//		{
+//			//assert(pos < _size);	//不能在最后一位插入
+//			assert(pos <= _size);
+//			if (_size == _capacity)
+//			{
+//				size_t newcapacity = _capacity == 0 ? 2 : _capacity * 2;
+//				reserve( newcapacity );
+//			}
+//			if (pos == _size)
+//			{
+//				_str[pos + 1] = '\0';
+//			}
+//			int n = _size;
+//			while (n > pos)
+//			{
+//				_str[n] = _str[n-1];
+//				--n;
+//			}
+//			_str[pos] = ch;
+//			_size++;
+//			return *this;
+//			
+//		}
+//		string& insert(size_t pos, const char* str)	//下标为pos
+//		{
+//			assert(pos <= _size);
+//			size_t len = strlen(str);
+//			
+//			if ((_size + len) >= _capacity)
+//			{
+//				size_t newcapacity = _size + strlen(str);
+//				reserve(newcapacity);
+//			}
+//			if (pos == _size)
+//			{
+//				*this += str;
+//			}
+//			else
+//			{
+//				int n = _size;
+//				while (n >=(int)pos)  //pos是size_t类型的，在比较时会把n的类型转换为size_t再比较
+//				{
+//					_str[n + len] = _str[n];
+//					--n;
+//				}
+//
+//				//把str加到_str中，不能用strcpy，因为strcpy会拷贝\0 ,可以使用strncpy指定个数
+//
+//				/*int i = 0;
+//				while (i < len)
+//				{
+//					_str[n] = str[i];
+//					n++;
+//					i++;
+//				}*/
+//				strncpy(_str + pos, str, len);
+//				_size += len;
+//				return *this;  
+//			}
+//			
+//		}
+//		void erase(size_t pos, size_t len = npos)
+//		{
+//			assert(pos < _size);
+//			if (len >= (_size - pos))  //删除的个数大于等于pos后所有有效字符个数
+//			{
+//				_str[pos] = '\0';
+//				_size = pos;
+//			}
+//			else
+//			{
+//				size_t i = pos;
+//				for (; i <=(_size-len); i++)
+//				{
+//					_str[i] = _str[i + len];
+//
+//				}
+//				_size -= len;
+//			}
+//		}
+//		size_t find(char ch, size_t pos = 0)
+//		{
+//			
+//			for (size_t i = pos; i < _size; i++)
+//			{
+//				if (ch == _str[i])
+//					return i;
+//			}
+//			return npos;
+//		}
+//		size_t find(const char* str, size_t pos = 0)
+//		{
+//			/*int len = strlen(str);
+//			for (size_t i = pos; i <= _size - len; i++)
+//			{
+//				if (_str[i] == str[0])
+//				{
+//					int j = 1;
+//					for (j = 1; j < len; j++)
+//					{
+//						if (_str[i + j] != str[j])
+//							break;
+//					}
+//					if (j == len)
+//						return i;
+//				}
+//			}
+//			return npos;*/
+//
+//			char* ch = strstr(_str + pos, str);
+//			if (ch == nullptr)
+//			{
+//				return npos;
+//			}
+//			else
+//			{
+//				return ch - _str;
+//			}
+//		}
+//
+//		bool operator<(const string& str)
+//		{
+//			//_str<str._str
+//			return strcmp(_str, str._str) < 0;
+//		}
+//		bool operator==(const string& str)
+//		{
+//			return strcmp(_str, str._str) == 0;
+//		}
+//		/*bool operator>(const string& str)
+//		{
+//			return strcmp(_str, str._str) > 0;
+//		}*/
+//		bool operator>(const string& str)
+//		{
+//			return !(*this <= str);
+//		}
+//		bool operator<=(const string& str)
+//		{
+//			//return (strcmp(_str, str._str) == 0)||(strcmp(_str, str._str) > 0);
+//			return *this < str || *this == str;
+//		}
+//		bool operator>=(const string& str)
+//		{
+//			return !(*this < str);
+//		}
+//		bool operator!=(const string& str)
+//		{
+//			return !(*this == str);
+//		}
+//	private:
+//		char* _str;
+//		size_t _size;		//已经有多少个有效字符
+//		size_t _capacity;	//能存多少个有效字符，'\0'不是有效字符
+//		static size_t npos;
+//
+//	};
+//	size_t string::npos = -1;
+//	istream& operator>>(istream& cin, string& str)
+//	{
+//		if (str._size != 0)  //默认的cin会把原有值覆盖掉
+//		{
+//			/*delete[] str._str;*/  //不能这么释放空间，因为后面会对_str进行赋值，会造成内存泄漏
+//			str._str[0] = '\0';
+//			str._size = 0;
+//		}
+//		while (1)
+//		{
+//			char ch;
+//			//cin >> ch;  //cin会自动把空白字符过滤掉，认为输入下一个变量，所以cin不会接收到空白字符
+//			ch = cin.get();  //可以接受空白字符
+//			if (ch == ' ' || ch == '\n' || ch == '\t')
+//			{
+//				break;
+//			}
+//			else
+//			{
+//				str += ch;
+//			}
+//		}
+//	
+//		return cin;
+//	}
+//	ostream& operator<<(ostream& cout, const string& str)
+//	{
+//		//cout << str.c_str();
+//		int i = 0;
+//		size_t size = str.size();
+//		for (i = 0; i < size; ++i)
+//		{
+//			cout << str[i];
+//		}
+//		return cout;
+//	}
+//}
+//int main()
+//{
+//	//cr::string s1("hello");
+//	////cin >> s1;
+//	//cout << s1 << endl;
+//
+//	////三种遍历方式
+//	//int i = 0;
+//	//for (i = 0; i < s1.size(); ++i)
+//	//{
+//	//	cout << s1[i];
+//	//}
+//	//cout << endl;
+//
+//	////iterator
+//	//cr::string::iterator it = s1.begin();
+//	//while (it != s1.end())
+//	//{
+//	//	cout << *it;
+//	//	++it;
+//	//}
+//	//cout << endl;
+//
+//	////范围for是由迭代器支持的，也就是说这段代码最终会被编辑器替换成迭代器
+//	////iterator begin()	end()
+//	//for (auto au : s1)
+//	//{
+//	//	cout << au;
+//	//}
+//	//cout << endl;
+//
+//
+//
+//	//s1.push_back('s');
+//	//cout << s1 << endl;
+//	//s1.append("fsafsaf");
+//	//cout << s1 << endl;
+//	//s1 += "23131";
+//	//cout << s1 << endl;
+//
+//
+//	/*cr::string ss1("erji");
+//	cout << ss1 << endl;
+//	ss1.insert(1, 'w');
+//	cout << ss1 << endl;
+//	ss1.insert(0, '1');
+//	cout << ss1 << endl;
+//	ss1.insert(6, '4');
+//	cout << ss1 << endl;
+//	ss1.insert(7, "woshi");
+//	cout << ss1 << endl;
+//	ss1.insert(0, "niba");
+//	cout << ss1 << endl;
+//	ss1.insert(5, "521");
+//	cout << ss1 << endl;*/
+//
+//
+//	/*cr::string s1("woshida");
+//	s1.insert(0,"fsfse");
+//	cout << s1 << endl;*/
+//	//s1.resize(10, 'w');
+//	//cout << s1 << endl;
+//	////s1.resize(1, 'w');
+//	////cout << s1 << endl;
+//	//s1.erase(6, 10);
+//	//cout << s1 << endl;
+//
+//
+//	/*cr::string s1("woshishuaige");
+//	cout << s1.find('i', s1.find('i')+1) << endl;
+//	cout << s1.find("ge", s1.find('i') + 1) << endl;*/
+//
+//	//cr::string s2("woshi");
+//	//string s3("oumaga");
+//	//cin >> s2;
+//	//cout << s2 << endl;
+//	//cin >> s3; //string会把原先的内容覆盖掉
+//	//cout << s3 << endl;
+//
+//	cr::string s1("handsome");
+//	cr::string s2("beautiful");
+//	s2 = s1;
+//	cout << s1 << endl << s2 << endl;
+//	return 0;
+//}
