@@ -1,0 +1,209 @@
+//STL  标准模板库
+//
+#include<iostream>
+#include<vector>
+#include<algorithm> //算法库
+using namespace std;
+
+
+//三种遍历方式
+void test_vector1()
+{
+	vector<int> v1;
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+
+	vector<int> v2(v1);
+
+	for (auto au : v1)		//被编译器替换成迭代器方式遍历支持的
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+	for (int i=0;i<v2.size();++i)
+	{
+		cout << v2[i] << "  ";
+	}
+	cout << endl;
+
+	vector<int> v3;
+	v3.push_back(20);
+	v3.push_back(50);
+	v3.push_back(30);
+	v3.push_back(40);
+	v3.push_back(60);
+	v1 = v3;
+	vector<int>::iterator it = v1.begin();
+	while (it != v1.end())
+	{
+		cout << *it << "  ";
+		++it;
+	}
+	cout << endl;
+}
+
+
+//四种类型的迭代器
+void test_vector2()
+{
+	//
+	vector<int> v1;
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+
+	//1.普通正向迭代器  （变量不是const修饰的）  可读可写
+	vector<int>::iterator it = v1.begin();
+	while (it != v1.end())
+	{
+		*it += 1;
+		cout << *it << "  ";
+		++it;
+	}
+	cout << endl;
+
+	const vector<int> v2(v1); 
+	//2.const迭代器  (变量是const修饰的，返回值也是const修饰的指针)  只读不可写
+	vector<int>::const_iterator it2 = v2.begin();
+	while (it2 != v2.end())
+	{
+		//*it2 = 1;  //不可写
+		cout << *it2 << "  ";
+		++it2;
+	}
+	cout << endl;
+
+	//3.反向迭代器  rbegin和rend返回值是reverse_iterator类型的  （变量不是const修饰的）
+	vector<int>::reverse_iterator it3 = v1.rbegin(); 
+	while (it3 != v1.rend())
+	{
+		*it3 += 4;
+		cout << *it3 << "  ";
+		++it3;
+	}
+	cout << endl;
+
+	//4.const修饰的反向迭代器  rcbegin和crend返回值是const_reverse_iterator类型的  (变量是const修饰的)
+	vector<int>::const_reverse_iterator it4 = v2.crbegin();
+	while (it4 != v2.crend())
+	{
+		//*it4 += 1;  //不可写
+		cout << *it4 << "  ";
+		++it4;
+	}
+	cout << endl;
+}
+
+
+//capacity容量的增长速度 编译器不同增长速度可能会不一样 这里是1.5倍增容，linux是2倍增容
+//增容次数越多，效率越低，每次增容都要付出代价；
+//相对而言，倍数高，增容次数越少，效率越高，但浪费的空间更多
+//可以使用reserve函数来缓解增容次数
+void test_vector3()
+{
+	vector<int> v1;
+	int cap = v1.capacity();
+	cout << cap << endl;
+	//v1.reserve(100);  可以使用reserve函数来缓解增容次数,不能使用resize，因为resize会初始化
+	for (int i = 0; i < 100; ++i)
+	{
+		v1.push_back(1);
+		if (cap != v1.capacity())
+		{
+			cap = v1.capacity();
+			cout << cap << endl;
+		}
+	}
+}
+
+
+//抛异常
+void test_vector4()
+{
+	vector<int> v1;
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+	//v1[4] = 6;  //越界，出现assert错误，程序直接终止
+	v1.at(4) = 1; //捕获异常
+}
+
+
+//vector 几个常用的接口
+void test_vector5()
+{
+	vector<int> v1;
+	v1.push_back(1);
+	v1.push_back(2);
+	v1.push_back(3);
+	v1.push_back(4);
+
+	v1.pop_back();
+	for (auto au : v1)
+	{
+		cout << au << "  " ;
+	}
+	cout << endl;
+
+
+	/*insert(iterator, val);
+	insert(iterator, n, val);
+	insert(iterator, InputIterator first, InputIterator last);*/
+	v1.insert(v1.begin(), 0);
+	v1.insert(v1.begin(), 2,-1);
+	for (auto au : v1)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+
+
+	v1.erase(v1.begin());
+	for (auto au : v1)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+
+
+	//vector没有find的接口，
+	//如果想要查找某一个值的下标，可以使用算法中的find函数模板（不仅vector可以使用）
+	//在前闭后开的区间内查找第一个为目标值的地址，如果找不到，就会返回区间的最后一个地址end()
+	vector<int>::iterator pos = find(v1.begin(), v1.end(), 3);
+	cout << *pos << endl;
+	if (pos != v1.end())
+		v1.erase(pos);
+	for (auto au : v1)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+
+
+	vector<int> v2;
+	v2.push_back(10);
+	v2.push_back(-2);
+	v2.push_back(3);
+	v2.push_back(0);
+	sort(v2.begin(), v2.end());
+	for (auto au : v2)
+	{
+		
+		cout << au << "  ";
+	}
+	cout << endl;
+}
+int main()
+{
+	//test_vector1();
+	//test_vector2();
+	//test_vector3();
+	//test_vector4();
+	//test_vector5();
+
+	return 0;
+}
