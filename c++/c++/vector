@@ -197,13 +197,164 @@ void test_vector5()
 	}
 	cout << endl;
 }
+
+
+//迭代器失效
+void test_vector6()
+{
+	vector<int> v1;
+	v1.push_back(1);
+	v1.push_back(4);
+	v1.push_back(4);
+	v1.push_back(4);
+
+	//1.
+	//vector<int>::iterator it = v1.begin();
+	//
+	//v1.push_back(5); 
+	////迭代器失效  
+	////原因：push_back会导致vector扩容，旧空间不够扩容的话会拷贝到新空间内扩容，但迭代器还是指向旧空间
+	////push_back  insert  resize  reserve 等可能会扩容的接口都会导致迭代器失效
+	//while (it != v1.end())
+	//{
+	//	cout << *it << "   ";
+	//	++it;
+	//}
+	//cout << endl;
+
+
+
+	//2. 
+	vector<int>::iterator it = v1.begin();
+
+	while (it != v1.end())
+	{
+		if (*it % 2 == 0)
+		{
+			//v1.erase(it); 
+			////迭代器失效
+			////删除it之后，it的位置就不对了，it就失效了 ，再++就不行，会有各种各样的问题
+			////vs下报错是编译器检查的 ，一定报错
+			////gcc下没有严格的检查，有可能会报错，也有不报错但结果不对
+
+
+			//解决办法：
+			it = v1.erase(it); //erase返回删除的it的下一个位置的迭代器
+
+		}
+		else 
+		{
+			++it;
+		}
+	}
+	for (auto au : v1)
+	{
+
+		cout << au << "  ";
+	}
+	cout << endl;
+
+}
+//int main()
+//{
+//	//test_vector1();
+//	//test_vector2();
+//	//test_vector3();
+//	//test_vector4();
+//	//test_vector5();
+//	//test_vector6();
+//	
+//
+//	return 0;
+//}
+
+
+
+//vector的实现
+
+namespace cr
+{
+	template<class T>
+	class vector
+	{
+	public:
+		typedef T* iterator;
+		vector() :_start(nullptr), _finish(nullptr), _endofstorage(nullptr)
+		{}
+		iterator begin()
+		{
+			return _start;
+		}
+		iterator end()
+		{
+			return _finish;
+		}
+		void reserve(size_t n)
+		{
+			size_t sz = size();
+			T* tmp = new T[n];
+			if (_start)
+			{
+				memcpy(tmp, _start, sizeof(T) * sz);
+				delete[] _start;
+			}
+			_start = tmp;
+			//_finish = _start + size();  
+			//不能直接用size(),因为这个接口也是根据_finish和_start算的，这俩已经不属于同一块数据区域了
+			_finish = _start + sz;
+			_endofstorage = _start + n;
+		}
+		void push_back(const T& x)
+		{
+			if (_finish == _endofstorage)
+			{
+				size_t newcapacity = capacity() == 0 ? 2 : 2 * capacity();
+				reserve(newcapacity);
+			}
+			*_finish = x;
+			_finish++;
+		}
+		void pop_back()
+		{
+
+		}
+		size_t size()
+		{
+			return _finish - _start;
+		}
+		size_t capacity()
+		{
+			return _endofstorage - _start;
+		}
+	private:
+		iterator _start;
+		iterator _finish;
+		iterator _endofstorage;
+	};
+
+
+	void test_vector1()
+	{
+		vector<int> v;
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+
+		vector<int>::iterator it = v.begin();
+		while (it != v.end()) 
+		{
+			cout << *it << "  ";
+			it++;
+		}
+		cout << endl;
+		cout << v.size() << endl << v.capacity() << endl;
+	}
+}
 int main()
 {
-	//test_vector1();
-	//test_vector2();
-	//test_vector3();
-	//test_vector4();
-	//test_vector5();
-
+	cr::test_vector1();
+	
 	return 0;
 }
