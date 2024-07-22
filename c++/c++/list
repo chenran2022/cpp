@@ -1,1 +1,153 @@
+//为什么会有list？
+//list是为了补充vector的缺点存在的
+//vector缺点：
+//	1.头插和中间的插入删除效率很低, O(N)，因为需要挪动数据
+//	2.插入数据空间不够时需要增容，增容需要开辟新空间、拷贝数据、释放旧空间，付出很大的代价
+//vector优点：
+//	1.支持下标的随机访问，间接的就很好的支持排序、二分查找、堆算法等
+//list的出现就是为了解决vector的缺陷
+//list优点：
+//	1.头插和中间的插入删除效率高, O(1),因为不需要挪动数据
+//	2.插入数据是新增节点，不需要增容
+//list缺点：
+//	1.不支持随机访问
+//
+//综上，list和vector是相辅相成的两个容器
 
+
+
+#include<list>
+#include<iostream>
+#include<assert.h>
+using namespace std;
+
+
+void print_list(const list<int>& lt)
+{
+	list<int>::const_iterator it = lt.begin();
+	while (it != lt.end())
+	{
+		cout << *it << "  ";
+		++it;
+	}
+	cout << endl;
+}
+void test_list1()
+{
+	list<int> l;
+	l.push_back(1);
+	l.push_back(2);
+	l.push_back(3);
+	l.push_front(0);
+
+	list<int>::iterator it = l.begin();
+	while (it != l.end())
+	{
+		cout << *it << "  ";
+		++it;
+	}
+	cout << endl;
+
+	list<int> l2(l);
+	print_list(l2);
+
+	list<int> l3;
+	l3 = l2;
+	//只要容器支持迭代器，就可以使用范围for操作
+	for (auto au : l3)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+
+	list<int>::reverse_iterator rit = l3.rbegin();
+	while (rit != l3.rend())
+	{
+		cout << *rit << "  ";
+		++rit;
+	}
+	cout << endl;
+}
+//支持的操作接口的角度分迭代器的类型：单向（forwawrd_list),双向（list),随机(vector)
+//从使用的场景的角度分迭代器的类型：（正向迭代器、反向迭代器）+ const迭代器
+
+
+void test_list2()
+{
+	list<int> l;
+	l.push_back(1);
+	l.push_back(2);
+	l.push_back(3);
+	l.push_front(0);
+	l.push_front(-1);
+	print_list(l);
+
+	l.pop_back();
+	l.pop_front();
+	print_list(l);
+
+	list<int>::iterator pos = find(l.begin(), l.end(), 1);
+	if (pos != l.end())
+	{
+		l.insert(pos, 100); //list插入并不会造成迭代器失效
+		print_list(l);
+		l.erase(pos);		//list  erase会造成迭代器失效
+	}
+	print_list(l);
+	
+	
+	//splice 转移一个list到另一个list
+	list<int> l2;
+	l2.push_back(100);
+	list<int>::iterator it = l2.begin();	
+	l2.splice(it, l);
+	print_list(l2);
+
+	//remove  从list中找值删掉
+	l2.remove(100);
+	print_list(l2);
+
+	//sort   reverse
+	l.push_back(2);
+	l.push_back(3);
+	l.push_front(0);
+	l.push_front(-1);
+	l.sort();
+	print_list(l);
+	l.reverse();
+	print_list(l);
+
+}
+
+
+//迭代器失效
+void test_list3()
+{
+	list<int> l;
+	l.push_back(1);
+	l.push_back(2);
+	l.push_back(3);
+	l.push_front(0);
+	l.push_front(-1);
+
+	list<int>::iterator it = l.begin();
+	while (it != l.end())
+	{
+		if (*it == 3)
+		{
+			//l.erase(it);  //迭代器失效
+			it = l.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
+}
+int main()
+{
+	//test_list1();
+	//test_list2();
+	test_list3();
+	return 0;
+}
