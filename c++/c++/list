@@ -154,7 +154,7 @@ using namespace std;
 
 
 
-//list的底层实现
+//list的底层实现   list的迭代器是一个节点的指针
 namespace cr
 {
 	template<class T>
@@ -168,6 +168,9 @@ namespace cr
 		{}
 	};
 
+
+	// __list_iterator<T, T&, T*> iterator;  //可读可写
+	// __list_iterator<T, const T&, const T*> const_iterator;  //可读不可写
 	template<class T,class Ref,class Ptr>
 	struct __list_iterator
 	{
@@ -177,9 +180,30 @@ namespace cr
 
 		__list_iterator(Node* node):_node(node)
 		{}
-		T& operator*()
+		////*it
+		//T& operator*()
+		//{
+		//	return _node->_data;
+		//}
+
+		////it->
+		//T* operator->()
+		//{
+		//	return &_node->_data;
+		//}
+
+		// 禁止 const_iterator 可以修改，需要返回 const T&  const T*
+		
+		//*it
+		Ref operator*()
 		{
 			return _node->_data;
+		}
+
+		//it->
+		Ptr operator->()
+		{
+			return &_node->_data;
 		}
 		
 		//++it
@@ -235,11 +259,39 @@ namespace cr
 		}
 		list(const list<T>& lt)
 		{
+			_head = new Node;
+			_head->next = _head;
+			_head->prev = _head; 
 
+			/*const_iterator it = lt.begin();
+			while (it != lt.end())
+			{
+				push_back(*it);
+				++it;
+			}*/
+
+			for (auto au : lt)
+				push_back(au);
 		}
-		list<T>& operator=(const list<T>& lt)
+		/*list<T>& operator=(const list<T>& lt)
 		{
+			if (this == &lt)
+			{
+				return *this;
+			}
+			if (begin() != end())
+				clear();
+			
+			for (auto au : lt)
+				push_back(au);
 
+			return *this;
+		}*/
+
+		list<T>& operator=(list<T> lt)
+		{
+			swap(_head, lt._head);
+			return *this;
 		}
 		~list()
 		{
@@ -257,53 +309,102 @@ namespace cr
 		}
 		typedef __list_iterator<T ,T&,T*> iterator;
 		typedef __list_iterator<T, const T&, const T*> const_iterator;
-		iterator begin()
+		iterator begin()  //头结点的下一个节点
 		{
 			return iterator(_head->next);
 		}
-		iterator end()
+		iterator end()   //头节点
 		{
 			return iterator(_head);
 		}
+		const_iterator begin()const
+		{
+			return const_iterator(_head->next);
+		}
+		const_iterator end()const
+		{
+			return const_iterator(_head);
+		}
 		void push_back(const T& x)
 		{
-			
-			Node* tail = _head->prev;
+			//1.
+			//Node* tail = _head->prev;
 
-			Node* new_node = new Node(x);  //需要Node构造函数
-			/*Node* new_node = new Node;
-			new_node->_data = x;*/
-			new_node->next = _head;
-			new_node->prev = tail;
-			tail->next = new_node;
-			_head->prev = new_node;
+			//Node* new_node = new Node(x);  //需要Node构造函数
+			///*Node* new_node = new Node;
+			//new_node->_data = x;*/
+			//new_node->next = _head;
+			//new_node->prev = tail;
+			//tail->next = new_node;
+			//_head->prev = new_node; 
+
+			//2.
+			insert(end(), x);
 		}
 
 		void pop_back()
 		{
-
+			erase(--end());
 		}
 		void push_front(const T& x)
 		{
-
+			insert(begin(), x);
 		}
 		void pop_front()
 		{
-
+			erase(begin());
 		}
 		void insert(iterator pos, const T& x)
 		{
-
+			Node* cur = pos._node;
+			Node* prev = cur->prev;
+			Node* new_node = new Node(x);
+			new_node->next = cur;
+			new_node->prev = prev;
+			prev->next = new_node;
+			cur->prev = new_node;
 		}
-		void erase(iterator pos)
-		{
 
+		//list.erase会导致迭代器失效，vector.insert也会导致迭代器失效，因为vector增容会重新开辟一块空间，而list.insert不会导致迭代器失效
+		void erase(iterator pos)	
+		{
+			assert(pos._node != pos._node->next);
+			assert(pos != end());
+			Node* prev = pos._node->prev;
+			Node* next = pos._node->next;
+			prev->next = next;
+			next->prev = prev;
+			delete pos._node;
 		}
 	private:
 		Node* _head;
 	};
 
+	struct Date
+	{
+		Date():_year(2000),_month(1),_day(1)
+		{
 
+		}
+		Date(int year,int month,int day):_year(year),_month(month),_day(day)
+		{}
+	
+		int _year;
+		int _month;
+		int _day;
+	};
+	void print_list(const list<int>& lt)
+	{
+		//const list<int>& lt   不能被修改
+		list<int>::const_iterator it = lt.begin();
+		while (it != lt.end())
+		{
+			//*it = 1;
+			cout << *it << "  ";
+			++it;
+		}
+		cout << endl;
+	}
 	void test_list1()
 	{
 		list<int> lt;
@@ -315,15 +416,109 @@ namespace cr
 		list<int>::iterator it = lt.begin();
 		while (it != lt.end())
 		{
+			*it = 1;
 			cout << *it << "  ";
 			++it;
 		}
 		cout << endl;
+		print_list(lt);
 	}
+	void test_list2()
+	{
+		list<Date> lt;
+		lt.push_back(Date());
+		lt.push_back(Date());
+		lt.push_back(Date());
+
+		list<Date>::iterator it = lt.begin();
+		while (it != lt.end())
+		{
+			//cout << *it << "  ";  //对于自定义类型，如果没有重载<<,就不能使用*it
+
+			//it->  it.operator->()  Date*
+			//这里原本应该是it->->_year,但为了可读性，编译器特殊处理了一下
+			cout << it->_year << "  " << it->_month << "  " << it->_day << endl; //更喜欢这么用
+			cout << (*it)._year << "  " << (*it)._month << "  " << (*it)._day << endl;
+			++it;
+		}
+		cout << endl;
+	}
+	void test_list3()
+	{
+		list<int> lt;
+		lt.push_back(1);
+		lt.push_back(2);
+		lt.push_back(3);
+		lt.push_back(4);
+
+		print_list(lt);
+
+		lt.insert(++lt.begin(), 100);
+		print_list(lt);
+		
+		lt.insert(++lt.end(), 250);
+		print_list(lt);
+
+		lt.push_back(360);
+		lt.push_front(520);
+		print_list(lt);
+
+
+		lt.erase(lt.begin());
+		print_list(lt);
+		lt.pop_back();
+		print_list(lt);
+
+		lt.clear();
+		lt.push_back(30);
+		print_list(lt);
+	}
+	void test_list4()
+	{
+		list<int> lt;
+		lt.push_back(1);
+		lt.push_back(2);
+		lt.push_back(3);
+		lt.push_back(4);
+
+		list<int> lt2(lt);
+		print_list(lt2);
+
+		list<int> lt3;
+		lt3 = lt;
+		print_list(lt3);
+	}
+
 }
 
 int main()
 {
-	cr::test_list1();
+	//cr::test_list1();
+	//cr::test_list2();
+	//cr::test_list3();
+	cr::test_list4();
+
+	//Node* cur
+	//iterator it
+	/*当他们都指向同一个节点，那么在物理内存中他们都是存的这个节点的地址，物理上一样
+	但是它们的类型不同，意义不一样
+	比如*cur是一个指针的解引用，取到的值是这个节点
+	而*it是调用调用迭代器的operator*，返回值是这个节点存的值*/
 	return 0;
 }
+
+//总结
+//1、vector和list的区别 ?
+//2、vector和list底层是如何实现的 ?
+//3、vector是如何增容的 ?
+//4、什么是迭代器失效 ?
+//
+//
+//vector是一个可动态增长的数组
+//优点 : 随机访问 operator[]->很好的支持排序、二分查找、堆算法的等等
+//缺点 : 头部或者中间的插入删除效率低 + 空间不够了以后增容的代价较大
+
+//list是一个带头双向循环的链表
+//优点:任意位置插入删除数据效率高，0(1)
+//缺点 : 不支持随机访问
+//总结 : vector和list是两个相辅相成，互补的容器
