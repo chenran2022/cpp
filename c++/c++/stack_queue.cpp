@@ -5,7 +5,7 @@
 using namespace std;
 #include<list>
 #include<vector>
-
+#include<functional>  //仿函数
 #include<deque>  
 //双端队列
 //支持任意位置插入删除，也支持随机访问，
@@ -25,47 +25,65 @@ using namespace std;
 //2. 在stack中元素增长时，deque比vector的效率高(扩容时不需要搬移大量数据)；queue中的元素增长时，deque不仅效率高，而且内存使用率高。
 
 
-//stack 和 queue 没有迭代器， 属于STL的第二类 容器适配器(通过容器进行适配转换)
-// 
-//void test_stack()
-//{
-//	stack<int> st;
-//	st.push(1);
-//	st.push(2);
-//	st.push(3);
-//	st.push(4);
-//
-//	while (!st.empty())
-//	{
-//		cout << st.top() << " ";
-//		st.pop();
-//	}
-//	cout << endl;
-//}
-//
-//void test_queue()
-//{
-//	queue<int> q;
-//	q.push(1);
-//	q.push(2);
-//	q.push(3);
-//	q.push(4);
-//	while (!q.empty())
-//	{
-//		cout << q.front() << " ";
-//		q.pop();
-//	}
-//	cout << endl;
-//}
-//int main()
-//{
-//	test_stack();
-//	test_queue();
-//	
-//	return 0;
-//}
+//stack 、queue 、priority_queue没有迭代器，因为他们有特殊的性质，属于STL的第二类 容器适配器(通过容器进行适配转换)
+ 
+void test_stack()
+{
+	stack<int> st;
+	st.push(1);
+	st.push(2);
+	st.push(3);
+	st.push(4);
 
+	while (!st.empty())
+	{
+		cout << st.top() << " ";
+		st.pop();
+	}
+	cout << endl;
+}
 
+void test_queue()
+{
+	queue<int> q;
+	q.push(1);
+	q.push(2);
+	q.push(3);
+	q.push(4);
+	while (!q.empty())
+	{
+		cout << q.front() << " ";
+		q.pop();
+	}
+	cout << endl;
+}
+void test_priority_queue()
+{
+	//priority_queue<int> pq;						//默认大的优先级高
+	priority_queue<int,vector<int>,greater<int>> pq;//想要实现小的优先级高，要使用仿函数
+	pq.push(1);
+	pq.push(20);
+	pq.push(3);
+	pq.push(40);
+	pq.push(1);
+	pq.push(100);
+	pq.push(1);
+	while (!pq.empty())
+	{
+		cout << pq.top() << "  ";
+		pq.pop(); 
+	}
+	cout << endl;
+}
+int main()
+{
+	/*test_stack();
+	test_queue();*/
+	test_priority_queue();
+	return 0;
+}
+
+//
 //namespace cr
 //{
 //	template<class T,class Container>
@@ -99,7 +117,8 @@ using namespace std;
 //	void test_stack1()
 //	{
 //		//cr::stack<int, vector<int>> st;
-//		cr::stack<int, list<int>> st;
+//		//cr::stack<int, list<int>> st;
+//		cr::stack<int, deque<int>> st;
 //		st.push(1);
 //		st.push(2);
 //		st.push(3);
@@ -120,61 +139,64 @@ using namespace std;
 //}
 
 
+//
+//namespace cr
+//{
+//	template<class T,class Container>
+//	class queue
+//	{
+//	public:
+//		void push(const T& x)
+//		{
+//			_con.push_back(x);
+//		}
+//		void pop()
+//		{
+//			_con.pop_front();
+//		}
+//		T& top()
+//		{
+//			return _con.back();  //容器的最后一个元素直接引用
+//		}
+//		T& front()
+//		{
+//			return _con.front(); //容器的第一个元素直接引用
+//		}
+//		bool empty()
+//		{
+//			return _con.empty();
+//		}
+//		int size()
+//		{
+//			return _con.size();
+//		}
+//	private:
+//		Container _con;
+//	};
+//
+//	void test_queue1()
+//	{
+//		//cr::queue<int, vector<int>> q;  //queue不能使用vector，因为vector没有提供pop_front接口
+//		//cr::queue<int, list<int>> q;
+//		cr::queue<int, deque<int>> q;
+//		q.push(1);
+//		q.push(2);
+//		q.push(3);
+//		q.push(4);
+//		
+//		while (!q.empty())
+//		{
+//			cout <<	q.front() << "  ";
+//			q.pop();
+//		}
+//		cout << endl;
+//	}
+//}
+//int main()
+//{
+//	cr::test_queue1();
+//	
+//	return 0;
+//}
 
-namespace cr
-{
-	template<class T,class Container>
-	class queue
-	{
-	public:
-		void push(const T& x)
-		{
-			_con.push_back(x);
-		}
-		void pop()
-		{
-			_con.pop_front();
-		}
-		T& top()
-		{
-			return _con.back();  //容器的最后一个元素直接引用
-		}
-		T& front()
-		{
-			return _con.front(); //容器的第一个元素直接引用
-		}
-		bool empty()
-		{
-			return _con.empty();
-		}
-		int size()
-		{
-			return _con.size();
-		}
-	private:
-		Container _con;
-	};
 
-	void test_queue1()
-	{
-		//cr::queue<int, vector<int>> q;  //queue不能使用vector，因为vector没有提供pop_front接口
-		cr::queue<int, list<int>> q;
-		q.push(1);
-		q.push(2);
-		q.push(3);
-		q.push(4);
-		
-		while (!q.empty())
-		{
-			cout <<	q.front() << "  ";
-			q.pop();
-		}
-		cout << endl;
-	}
-}
-int main()
-{
-	cr::test_queue1();
-	
-	return 0;
-}
