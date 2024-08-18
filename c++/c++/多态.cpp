@@ -195,7 +195,7 @@ int main()
 纯虚函数的作用:	1、强制子类去完成重写
 				2、表示抽象的类型。抽象就是在现实中没有对应的实体的。
 */
-class Car
+/*class Car
 {
 public:
 	virtual void Drive() = 0;
@@ -213,4 +213,97 @@ void main()
 {
 	//Car c;//不能实例化对象
 	Benz b;
+}*/
+
+/*
+普通函数的继承是一种实现继承，派生类继承了基类函数，可以使用函数，继承的是函数的实现。
+虚函数的继承是一种接口继承，派生类继承的是基类虚函数的接口，目的是为了重写，达成多态，继承的是接口。
+所以如果不实现多态，不要把函数定义成虚函数。
+*/
+
+/*
+class Base
+{
+public:
+	virtual void Func1()
+	{
+		cout << "Func1()" << endl;
+	}
+	virtual void Func2()
+	{
+		cout << "Func2()" << endl;
+	}
+	void Func3()
+	{
+		cout << "Func3()" << endl;
+	}
+
+private:
+	int _b = 1;
+};
+int main()
+{
+	Base b;
+	cout << sizeof(b) << endl;
+	//除了_b成员，还多一个 vfptr放在对象的前面(注意有些平台可能会放到对象的最后面，这个跟平台有关)，
+	//对象中的这个指针我们叫做虚函数表指针(v代表virtual，f代表function)。
+	//一个含有虚函数的类中都至少都有一个虚函数表指针，因为虚函数的地址要被放到虚函数表中，虚函数表也简称虚表，
+	//虚函数表其实就是一个指针数组（虚函数指针,规定以空指针为结束标记）
+	return 0;
+}
+*/
+
+
+class Base
+{
+public:
+	virtual void Func1()
+	{
+		cout << "Base::Func1()" << endl;
+	}
+	virtual void Func2()
+	{
+		cout << "Base::Func2()" << endl;
+	}
+	void Func3()
+	{
+		cout << "Base::Func3()" << endl;
+	}
+private:
+	int _b = 1;
+};
+class Derive : public Base
+{
+public:
+	virtual void Func1()
+	{
+		cout << "Derive::Func1()" << endl;
+	}
+private:
+	int _d = 2;
+};
+void test1()
+{
+	Base b2;
+	
+	Derive d2;
+}
+void test2()
+{
+	Base b3;
+	Derive d3;
+}
+int main()
+{
+	Base b;
+	b.Func1();
+	Derive d;
+	d.Func1();
+	//多态如何实现的指向谁就调用谁的虚函数 ?
+	//多态是在运行时到指向的对象的虚表中查找要调用的虚函数的地址来进行调用
+	test1();
+	test2();
+	//普通函数和虚函数都会被编译成指令以后存在代码段
+	//虚函数表也是存在代码段，同类型的对象共用一个虚表
+	return 0;
 }
