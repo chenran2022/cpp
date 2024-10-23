@@ -9,6 +9,7 @@ STL中的部分容器，比如：vector、list、deque、forward_list(C++11)等�
 #include<iostream>
 #include<set>
 #include<map>
+#include<string>
 using namespace std;
 
 /*
@@ -88,7 +89,7 @@ struct pair
 	pair(const T1& a, const T2& b): first(a), second(b)
 	{}
 };
-3. 在内部，map中的元素总是按照键值key进行比较排序的。
+3. 在内部，map中的元素总是按照键值key进行比较排序的。(string按ascll码值比较大小排序)
 4. map中通过键值访问单个元素的速度通常比unordered_map容器慢，
 但map允许根据顺序对元素进行直接迭代(即对map中的元素进行迭代时，可以得到一个有序的序列)。
 5. map支持下标访问符，即在[]中放入key，就可以找到与key对应的value。
@@ -118,13 +119,30 @@ void test_map()
 	{
 		cout << au.first << "-" << au.second << endl;
 	}
+}
 
+void test_map2()
+{
+	map<string, string> m1;
+	m1.insert(pair<string, string>("sort", "排序"));
+	m1.insert(make_pair("dog", "狗"));
+	m1.insert(make_pair("son", "kong"));
+
+	map<string, string>::iterator it = m1.begin();
+	while (it != m1.end())
+	{
+		cout << it->first << ":" << it->second << endl;
+		++it;
+	}
+}
+void test_map3()
+{
 	string arr[] = { "苹果", "西瓜", "苹果", "西瓜", "苹果", "苹果", "西瓜",
 	"苹果", "香蕉", "苹果", "香蕉" };
-	map<string,int> countTree;
+	map<string, int> countTree;
 	for (const auto& str : arr)
 	{
-		map<string,int>::iterator ret = countTree.find(str);
+		map<string, int>::iterator ret = countTree.find(str);
 		if (ret == countTree.end())
 		{
 			countTree.insert(make_pair(str, 1));
@@ -138,11 +156,92 @@ void test_map()
 	{
 		cout << au.first << "-" << au.second << endl;
 	}
-}
+	cout << endl;
 
+
+	string arr3[] = { "苹果", "苹果","西瓜", "苹果", "西瓜", "苹果", "苹果", "西瓜",
+	"苹果", "西瓜","香蕉", "苹果", "香蕉","香蕉" };
+	map<string, int> m3;
+	for (auto& au : arr3)
+	{
+		//1.如果水果没有在map中，则插入成功。bool为true
+		//2.如果水果已经在map中，插入失败，bool为false，通过返回值得到水果所在的节点迭代器，++次数
+		pair<map<string, int>::iterator, bool> ret = m3.insert(make_pair(au, 1));
+		if (ret.second == false)
+		{
+			ret.first->second++;
+		}
+	}
+	for (auto& au : m3)
+	{
+		cout << au.first << ":" << au.second << endl;
+	}
+	cout << endl;
+
+
+	//使用[]统计次数，[]内是key的值，返回的是key所对应的value值
+	string arr2[] = { "苹果", "苹果","西瓜", "苹果", "西瓜", "苹果", "苹果", "西瓜",
+	"苹果", "西瓜","香蕉", "苹果", "香蕉","香蕉" };
+	map<string, int> countMap2;
+	for (auto& au : arr2)
+	{
+		countMap2[au]++;	
+		//[]内是key的值，返回的是key所对应的value值
+		//1.如果水果不在map中，则插入pair<string,int()>,即pair<au,0>;返回映射对象(value)的引用，再++
+		//2.如果水果在map中，插入失败，返回string所在映射对象(value)的引用，再++
+	}
+	for (auto& au : countMap2)
+	{
+		cout << au.first << ":" << au.second << endl;
+	}
+	cout << endl;
+
+	//[]的原理：insert
+	/*
+	mapped_type& operator[](const key_type& k)
+	{
+		return ((this->insert(make_pair(k, mapped_type()))).first)->second;
+		return (*((this->insert(make_pair(k, mapped_type()))).first)).second;
+	}
+	mapped_type是value的类型的宏定义
+	this->insert(make_pair(k, mapped_type()))  --》 pair<iterator,bool>
+	this->insert(make_pair(k, mapped_type()))).first	--》 iterator/pair<first,second>/pair<key_type,mapped_type)
+	(*((this->insert(make_pair(k, mapped_type()))).first)).second  --》 mapped_type
+
+	这里不是用find实现，而是用insert实现
+	假如用find，如果map中没有k，该如何实现？
+	用insert实现
+	1.如果k不在map中，则插入pair<k,mapped_type()>,再返回映射对象的引用
+	2.如果k在map中，则插入失败，返回k所在节点中的映射对象的引用
+
+	map的operator[]作用：
+	1.插入
+	2.查找k对应的映射对象
+	3.修改k对用的映射对象
+	*/
+
+	countMap2["橘子"];//插入
+	countMap2["橘子"] = 3; //修改k对用的映射对象
+	cout << countMap2["橘子"] << endl;//查找k对应的映射对象
+	countMap2["梨"] = 5;//插入+修改
+	//一般用operator[]来插入+修改，不用查找是因为如果k不存在，就会插入数据
+}
+/*
+map总结：
+增：insert  operator[]
+删：erase
+改：operator[]
+查：find	一般不用operator[]
+遍历：iterator  范围for	（注意在map中存的是pair<k,v>键值对）
+*/
 int main()
 {
 	//test_set();
-	test_map();
+	//test_map();
+	//test_map2();
+	test_map3();
 	return 0;
 }
+
+
+
