@@ -309,6 +309,3 @@ int main()
 	test_multimap();
 	return 0;
 }
-
-
-
