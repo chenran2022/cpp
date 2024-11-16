@@ -233,13 +233,80 @@ map总结：
 改：operator[]
 查：find	一般不用operator[]
 遍历：iterator  范围for	（注意在map中存的是pair<k,v>键值对）
+	遍历出来的数据是按k排序的，因为底层是二叉搜索树，遍历走的是树的中序
 */
+
+
+
+//multiset  和set同一个头文件
+void test_multiset()
+{
+	//跟set的区别就是可以键值冗余
+	multiset<int> ms;
+	ms.insert(1);
+	ms.insert(6);
+	ms.insert(3);
+	ms.insert(10);
+	ms.insert(3);
+	ms.insert(5);
+	ms.insert(3);
+
+	for (auto& au : ms)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+
+	multiset<int>::iterator pos = ms.find(3);
+	cout << *pos << endl;
+	pos++;
+	cout << *pos << endl;
+	pos++;
+	cout << *pos << endl;
+	pos++;
+	cout << *pos << endl;
+
+
+	set<int> s;
+	s.insert(1);
+	s.insert(6);
+	s.insert(3);
+	s.insert(10);
+	s.insert(3);
+	s.insert(5);
+	s.insert(1);
+
+	for (auto& au : s)
+	{
+		cout << au << "  ";
+	}
+	cout << endl;
+}
+
+//multimap 和 map的区别  和上面一样，
+//另外multimap不能使用operator[],因为当有多个key值时，不知道返回哪个key值对应的value
+void test_multimap()
+{
+	multimap<string, int> mm;
+	mm.insert(make_pair("dog", 1));
+	mm.insert(make_pair("dog", 3));
+	mm.insert(make_pair("dog", 5));
+	mm.insert(make_pair("dog", 1));
+	mm.insert(make_pair("dog", 1));
+	for (auto& au : mm)
+	{
+		cout << au.first << "  " << au.second << endl;
+	}
+	cout << endl;
+}
 int main()
 {
 	//test_set();
 	//test_map();
 	//test_map2();
-	test_map3();
+	//test_map3();
+	//test_multiset();
+	test_multimap();
 	return 0;
 }
 
