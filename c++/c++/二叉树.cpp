@@ -177,6 +177,8 @@ public:
 				else
 				{
 					//左子树最大节点的右为空，右子树的最小节点的左为空
+					//这里以右子树的最小节点为例，找到右子树的最小节点进行替换
+					
 					Node* rightMinParent = cur; //不能直接给空
 					Node* rightMin = cur->_right;
 					while (rightMin->_left)
@@ -184,12 +186,17 @@ public:
 						rightMinParent = rightMin;
 						rightMin = rightMin->_left;
 					}
-					cur->_key = rightMin->_key;
+ 
+					cur->_key = rightMin->_key; 
+                  //将左子树最大节点的值或者是右子树的最小节点的值 与 删除的节点的值替换，删除替换的节点
+                  //这里只将删除节点的值进行赋值，没必要再把将要删除的节点进行赋值
+ 
+					//右子树的最小节点可能是自己本身父节点的左节点或者是右节点，与找右子树的最小节点的左为空无关，需要判断
 					if (rightMinParent->_left == rightMin)
 					{
 						rightMinParent->_left = rightMin->_right;
 					}
-					else	//当删除的是cur的右子节点时，
+					else	
 					{
 						rightMinParent->_right = rightMin->_right;
 					}
