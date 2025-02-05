@@ -297,19 +297,28 @@ public:
 		cout << root->_kv.first << " " << root->_kv.second << endl;
 		_InOrder(root->_right);
 	}
-	void InOrder()
+	void InOrder()		//不好传参，所以套了一层
 	{
 		_InOrder(_root);
 		cout << endl;
 	}
-
+	
+	int _Height(Node* root)
+	{
+		if (root == nullptr)
+			return 0;
+		int leftheight = _Height(root->_left);
+		int rightheight = _Height(root->_right);
+		return max(leftheight, rightheight) + 1;	//返回高度，因为是高度，所以要加1
+	}
 	bool _IsBalance(Node* root)
 	{
 		if (root == nullptr)
 			return true;
-		if (abs(root->_bf) > 1)
-			return false;
-		return _IsBalance(root->_left) && _IsBalance(root->_right);
+		int leftheight=_Height(root->_left);	//左子树的高度
+		int rightheight=_Height(root->_right);	//右子树的高度
+
+		return abs(leftheight-rightheight)<=1 && _IsBalance(root->_left) && _IsBalance(root->_right);
 	}	
 	bool IsBalance()
 	{
@@ -323,7 +332,7 @@ private:
 
 void test()
 {
-	int a[] = { 1,2,3,4,5,6,7,8,9,10 };
+	int a[] = { 4, 2, 6, 1, 3, 5, 15, 7, 16, 14 };
 	AVLTree<int, int> avl;
 	for (int i = 0; i < 10; i++)
 	{
@@ -340,4 +349,3 @@ int main()
 	test();
 	return 0;
 }
-
