@@ -88,7 +88,7 @@ class RBTree
 public:
 	typedef RBTreeNode<K,V> Node;
 
-	bool Insert(pair<K, V> kv)
+	bool Insert(const pair<K, V>& kv)
 	{
 		//空树 就令根节点为黑
 		if (_root == nullptr)
