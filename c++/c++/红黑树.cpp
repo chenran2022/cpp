@@ -90,12 +90,14 @@ public:
 
 	bool Insert(pair<K, V> kv)
 	{
+		//空树 就令根节点为黑
 		if (_root == nullptr)
 		{
 			_root = new Node(kv);
 			_root->_color = BLACK; // 根节点是黑色的
 			return true;
 		}
+
 		Node* parent = nullptr;
 		Node* cur = _root;
 		while (cur)
@@ -154,7 +156,7 @@ public:
 			{
 				Node* uncle = grandparent->_right;
 				//第一种情况：cur默认为红，p是红，若u存在且是红，g为黑
-				if (uncle->_color == RED)
+				if (uncle && uncle->_color == RED)
 				{
 					parent->_color = BLACK;
 					uncle->_color = BLACK;
@@ -188,7 +190,7 @@ public:
 			{
 				Node* uncle = grandparent->_left;
 				//第一种情况：cur默认为红，p是红，若u存在且是红，g为黑
-				if (uncle->_color == RED)
+				if (uncle && uncle->_color == RED)
 				{
 					parent->_color = BLACK;
 					uncle->_color = BLACK;
@@ -222,14 +224,184 @@ public:
 		_root->_color = BLACK;
 		return true;
 	}
+	void RotateR(Node* parent)
+	{
+		Node* SubL = parent->_left;
+		Node* SubLR = SubL->_right;
+		parent->_left = SubLR;
 
-private:
-	Node* _root=nullptr;
-};
+		if (SubLR)
+		{
+			SubLR->_parent = parent;
+		}
+
+		if (_root == parent)
+		{
+			SubL->_parent = nullptr;
+			_root = SubL;
+		}
+		else
+		{
+			Node* pparent = parent->_parent;
+			if (parent == pparent->_left)
+				pparent->_left = SubL;
+			else
+				pparent->_right = SubL;
+			SubL->_parent = pparent;
+
+		}
+		parent->_parent = SubL;
+		SubL->_right = parent;
+	}
+
+	void RotateL(Node* parent)
+	{
+		Node* SubR = parent->_right;
+		Node* SubRL = SubR->_left;
+		parent->_right = SubRL;
+		SubR->_left = parent;
+		if (SubRL)
+		{
+			SubRL->_parent = parent;
+		}
+
+		if (_root == parent)
+		{
+			SubR->_parent = nullptr;
+			_root = SubR;
+		}
+		else
+		{
+			Node* pparent = parent->_parent;
+			if (parent == pparent->_left)
+				pparent->_left = SubR;
+			else
+				pparent->_right = SubR;
+			SubR->_parent = pparent;
+
+		}
+		parent->_parent = SubR;
+	}
+
+	void InOrder()
+	{
+		_InOrder(_root);
+	}
+	void _InOrder(Node* root)
+	{
+		if (root == nullptr)
+			return;
+		_InOrder(root->_left);
+		cout << root->_kv.first << " " << root->_kv.second << endl;
+		_InOrder(root->_right);
+	}
+
+	Node* Find(const K& k)
+	{
+
+		Node* cur = _root;
+		while (cur)
+		{
+			if (cur->_kv.first > k)
+			{
+				cur = cur->_left;
+			}
+			else if (cur->_kv.first < k)
+			{
+				cur = cur->_right;
+			}
+			else
+				return cur;
+		}
+		return nullptr;
+
+	}
+
+	/*
+	红黑树的验证
+		红黑树的检测分为两步：
+		1. 检测其是否满足二叉搜索树(中序遍历是否为有序序列)
+		2. 检测其是否满足红黑树的性质
+	*/
+	bool IsValidRBTree()
+	{
+		Node* pRoot = _root;
+		// 空树也是红黑树
+		if (nullptr == pRoot)
+			return true;
+		// 检测根节点是否满足情况
+		if (BLACK != pRoot->_color)
+		{
+			cout << "违反红黑树性质二：根节点必须为黑色" << endl;
+			return false;
+		}
+		// 获取任意一条路径中黑色节点的个数
+		size_t blackCount = 0;
+		Node* pCur = pRoot;
+		while(pCur)
+		{
+			if (BLACK == pCur->_color)
+				blackCount++;
+			pCur = pCur->_left;
+		}
+		// 检测是否满足红黑树的性质，k用来记录路径中黑色节点的个数
+		size_t k = 0;
+		return _IsValidRBTree(pRoot, k, blackCount);
+	}
+	bool _IsValidRBTree(Node* pRoot, size_t k, const size_t blackCount)
+	{
+		//走到null之后，判断k和black是否相等
+		if (nullptr == pRoot)
+		{
+			if (k != blackCount)
+			{
+				cout << "违反性质四：每条路径中黑色节点的个数必须相同" << endl;
+				return false;
+			}
+			return true;
+		}
+		// 统计黑色节点的个数
+		if (BLACK == pRoot->_color)
+			k++;
+		// 检测当前节点与其双亲是否都为红色(如果检查孩子是否为红，情况多些，与检查父节点是否为红效果相同)
+		Node* pParent = pRoot->_parent;
+		if (pParent && RED == pParent->_color && RED == pRoot->_color)
+		{
+			cout << "违反性质三：没有连在一起的红色节点" << endl;
+			return false;
+		}
+		return _IsValidRBTree(pRoot->_left, k, blackCount) &&
+			_IsValidRBTree(pRoot->_right, k, blackCount);
+	}
+
+	/*
+		删除操作总共分为5种情况
+		https://www.cnblogs.com/fornever/archive/2011/12/02/2270692.html
+	*/
+	/*
+	红黑树与AVL树的比较
+		红黑树和AVL树都是高效的平衡二叉树，增删改查的时间复杂度都是O($log_2 N$)，红黑树不追
+		求绝对平衡，其只需保证最长路径不超过最短路径的2倍，相对而言，降低了插入和旋转的次数，
+		所以在经常进行增删的结构中性能比AVL树更优，而且红黑树实现比较简单，所以实际运用中红黑树更多
+	*/
+	private:
+		Node* _root=nullptr;
+	};
+
+void test()
+{
+	int a[] = { 4, 2, 6, 1, 3, 5, 15, 7, 16, 14 };
+	RBTree<int, int> rb;
+	for (int i = 0; i < 10; i++)
+	{
+		rb.Insert(make_pair(a[i], a[i]));
+	}
+	rb.InOrder();
+	cout << rb.IsValidRBTree()<<endl;
+}
 int main() 
 {
 
-	RBTree<int, int> rb;
-	rb.Insert(make_pair(1, 2));
+	test();
 	return 0;
 }
