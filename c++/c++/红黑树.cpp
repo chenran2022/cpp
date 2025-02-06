@@ -77,7 +77,7 @@ public:
 	Color _color;
 
 	//这里颜色默认为红色，因为规则里面 每条路径包含相同数目的黑色结点 比 不连续的红色节点 更复杂
-	RBTreeNode(pair<K, V> kv):_kv(kv),_color(RED),_left(nullptr),_right(nullptr),_parent(nullptr)
+	RBTreeNode(const pair<K, V>& kv):_kv(kv),_color(RED),_left(nullptr),_right(nullptr),_parent(nullptr)
 	{
 	}
 };
