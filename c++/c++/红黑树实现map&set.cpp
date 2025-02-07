@@ -77,6 +77,8 @@ struct __TreeIterator
 	{
 		return _node != self._node;
 	}
+
+
 };
 
 template<class K, class T,class KOfT>
@@ -103,16 +105,20 @@ public:
 		return iterator(nullptr);
 	}
 	//这里的T 如果是map，T就是pair<K, V>；如果是set，T就是K
-	//如果是pair，下面就不能直接去比较大小，不能写出一个通用的比较方式
+	//如果是pair，下面就不能直接去比较大小，pair比较大小是first比较完之后还会比较second，而map只要求比较first的大小，不能写出一个通用的比较方式
 	//所以要用仿函数
-	bool Insert(const T& data)
+
+	//插入成功返回插入的节点迭代器，true
+	//插入失败，返回已经存在的节点迭代器，false
+	//返回值是pair是为了容易实现operator[]
+	pair<iterator,bool> Insert(const T& data)
 	{
 		//空树 就令根节点为黑
 		if (_root == nullptr)
 		{
 			_root = new Node(data);
 			_root->_color = BLACK; // 根节点是黑色的
-			return true;
+			return make_pair(iterator(_root),true);
 		}
 
 		KOfT koft;
@@ -131,9 +137,11 @@ public:
 				cur = cur->_right;
 			}
 			else
-				return false;
+				return make_pair(iterator(cur),false);
 		}
 		cur = new Node(data);
+		Node* newnode = cur;
+
 		cur->_parent = parent;
 		if (koft(cur->_parent->_data) > koft(data))
 		{
@@ -218,7 +226,7 @@ public:
 			}
 		}
 		_root->_color = BLACK;
-		return true;
+		return make_pair(iterator(newnode), true);
 	}
 	void RotateR(Node* parent)
 	{
@@ -292,7 +300,7 @@ public:
 		_InOrder(root->_right);
 	}
 
-	Node* Find(const K& k)
+	iterator* Find(const K& k)
 	{
 		KOfT koft;
 		Node* cur = _root;
@@ -307,9 +315,9 @@ public:
 				cur = cur->_right;
 			}
 			else
-				return cur;
+				return iterator(cur);
 		}
-		return nullptr;
+		return iterator(nullptr);
 
 	}
 
@@ -392,9 +400,21 @@ namespace cr
 			return _t.end();
 		}
 
-		bool Insert(const pair<K, V>& kv)
+		pair<iterator,bool> Insert(const pair<K, V>& kv)
 		{
 			return _t.Insert(kv);
+		}
+
+		//[]内是key的值，返回的是key所对应的value值
+		//	map的operator[]作用：
+		//	1.插入(当原来不存在key)
+		//	2.查找k对应的映射对象
+		//	3.修改k对用的映射对象
+		V& operator[](const K& key)
+		{
+			pair<iterator, bool> ret = _t.Insert(make_pair(key,V()));
+			return ret.first->second;//这里的->是irerator的运算符重载，同下
+			//return ret.first._node->_data.second;
 		}
 	private:
 		RBTree<K, pair<K, V>, MapKeyOfT> _t;
@@ -422,7 +442,7 @@ namespace cr
 			return _t.end();
 		}
 
-		bool Insert(const K& k)
+		pair<iterator,bool> Insert(const K& k)
 		{
 			return _t.Insert(k);
 		}
@@ -466,5 +486,23 @@ int main()
 
 	test_map();
 	test_set();
+
+	//使用[]统计次数，[]内是key的值，返回的是key所对应的value值
+	string arr2[] = { "苹果", "苹果","西瓜", "苹果", "西瓜", "苹果", "苹果", "西瓜",
+	"苹果", "西瓜","香蕉", "苹果", "香蕉","香蕉" };
+	cr::map<string, int> countMap2;
+	for (auto& au : arr2)
+	{
+		countMap2[au]++;	
+		//[]内是key的值，返回的是key所对应的value值
+		//1.如果水果不在map中，则插入pair<string,int()>,即pair<au,0>;返回映射对象(value)的引用，再++
+		//2.如果水果在map中，插入失败，返回string所在映射对象(value)的引用，再++
+	}
+	for (auto& au : countMap2)
+	{
+		cout << au.first << ":" << au.second << endl;
+	}
+	cout << endl;
+
 	return 0;
 }
