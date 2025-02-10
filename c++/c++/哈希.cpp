@@ -244,13 +244,18 @@ namespace CLOSE_HASH
 我冲突了，我自力更生解决，不占用你的位置，我自己挂起来
 */
 
-//开散列
+//开散列 --推荐
 
 /*
 当大量的数据冲突，这些哈希冲突的数据就会挂在同一个链式桶中，查找时效率就会降低
 所以开散列-哈希桶也是要控制哈希冲突的。
 如何控制呢?	通过控制负载因子，
 不过这里就把空间利用率提高一些，负载因子也可以高一些，一般开散列把负载因子控制到1，会比较好一些
+
+查找时间复杂度为O（1）
+假设总是有一些桶挂的数据很多，冲突很厉害如何解决?
+1、一个桶链的长度超过一定值，就将挂链表改成挂红黑树。(Java HashMap就当桶长度超过8就该成挂红黑树)
+2、控制负载因子
 */
 namespace OPEN_HASH
 {
@@ -264,7 +269,58 @@ namespace OPEN_HASH
 
 	};
 
-	template<class K, class T, class KOfT>
+	template<class K>
+	struct __Hash
+	{
+		const K& operator()(const K& key)
+		{
+			return key;
+		}
+	};
+
+	//因为string也是常见的类型，
+	//在定义unordered_map使用string时并没有使用仿函数，是因为对仿函数进行了特化，让他们使用同一个仿函数
+	//实际上class Hash=__Hash<K> 是在unordered_map里实现的，不是在HashTable
+	//特化
+	template<>
+	struct __Hash<string>
+	{
+		//字符串哈希算法，把字符串转成整形，例如BKDR Hash
+		//BKDR Hash:每次相加后乘以131。 
+		//这样让不同的字符串尽量映射在不同的位置
+		size_t operator()(const string& str)
+		{
+			size_t hash = 0;
+			for (int i = 0; i < str.length(); ++i)
+			{
+				hash *= 131;
+				hash += str[i];
+			}
+			return hash;
+		}
+	};
+
+	struct __StringHash
+	{
+		//字符串哈希算法，把字符串转成整形，例如BKDR Hash
+		//BKDR Hash:每次相加后乘以131。 
+		//这样让不同的字符串尽量映射在不同的位置
+		size_t operator()(const string& str)
+		{
+			size_t hash = 0;
+			for (int i = 0; i < str.length(); ++i)
+			{
+				hash *= 131;
+				hash += str[i];
+			}
+			return hash;
+		}
+	};
+
+	//class Hash=__Hash<K>  
+	//支持%运算使用缺省值__Hash<K>,直接返回key；不支持%运算的类型单独写一个仿函数，例如__StringHash
+	//实际上缺省值__Hash<K> 是在unordered_map里实现的，不是在HashTable
+	template<class K, class T, class KOfT,class Hash=__Hash<K>>
 	class HashTable
 	{
 		typedef HashNode<T> Node;
@@ -288,7 +344,11 @@ namespace OPEN_HASH
 					while(cur)
 					{
 						Node* next = cur->_next;
-						size_t index = koft(_tables[i]->_data) % newsize;
+
+						//当K为string之类的类型时，不能进行%操作,需要再加一个防函数,在进行 % 运算的时候使用
+						//size_t index = koft(_tables[i]->_data) % newsize;
+						size_t index = HashFunc(koft(_tables[i]->_data)) % newsize;
+
 						cur->_next = newtables[index];//头插
 						newtables[index] = cur;
 						cur = next;
@@ -301,7 +361,7 @@ namespace OPEN_HASH
 
 			//1.先查找表中是不是已经存在d
 			//计算映射位置
-			size_t index = koft(d) % _tables.size();
+			size_t index = HashFunc(koft(d)) % _tables.size();
 			Node* cur = _tables[index];
 			while (cur)
 			{
@@ -309,6 +369,7 @@ namespace OPEN_HASH
 				{
 					return false;
 				}
+				
 				cur = cur->_next;
 			}
 
@@ -320,10 +381,12 @@ namespace OPEN_HASH
 			++_num;
 			return true;
 		}
+		//查找时间复杂度为O（1）
 		Node* Find(const K& key)
 		{
+			
 			KOfT koft;
-			size_t index =key % _tables.size();
+			size_t index = HashFunc(key) % _tables.size();
 			Node* cur = _tables[index];
 			while (cur)
 			{
@@ -339,8 +402,12 @@ namespace OPEN_HASH
 
 		bool Erase(const K& key)
 		{	
+			if (_tables.size() == 0)
+			{
+				return false;
+			}
 			KOfT koft;
-			size_t index = key % _tables.size();
+			size_t index = HashFunc(key) % _tables.size();
 			Node* precur =  nullptr;
 			Node* cur = _tables[index];
 			while (cur)
@@ -368,6 +435,31 @@ namespace OPEN_HASH
 			return false;
 		}
 
+		size_t HashFunc(const K& key)
+		{
+			Hash hash;
+			return hash(key);
+		}
+
+		~HashTable()
+		{
+			Clear();
+		}
+		void Clear()
+		{
+			for (int i = 0; i < _tables.size(); ++i)
+			{
+				Node* cur = _tables[i];
+				while (cur)
+				{
+					Node* next = cur->_next;
+					delete cur;
+					cur = next;
+				}
+				_tables[i] = nullptr;
+			}
+			_num = 0;
+		}
 	private:
 		vector<Node*> _tables;
 		size_t _num = 0;//表中有效数据的个数
@@ -405,6 +497,34 @@ namespace OPEN_HASH
 
 		ht.Erase(113);
 	}
+	void TestHashTable2()
+	{
+		//HashTable<string,string, SetKeyOfT<string>, __StringHash> ht;
+
+		//特化
+		HashTable<string,string, SetKeyOfT<string>> ht;
+		ht.Insert("char");
+		ht.Insert("11");
+		ht.Insert("23");
+		ht.Insert("33");
+		ht.Insert("4""1");
+		ht.Insert("53");
+		ht.Insert("63");
+		ht.Insert("81");
+		ht.Insert("93");
+		ht.Insert("103");
+		ht.Insert("123");
+		ht.Insert("113");
+		ht.Insert("71");
+		if (ht.Find("103"))
+		{
+			ht.Erase("103");
+		}
+
+		ht.Erase("113");
+		cout << ht.HashFunc("abcd") << endl;
+		cout << ht.HashFunc("aadd") << endl;
+	}
 }
 
 int main()
@@ -412,6 +532,7 @@ int main()
 
 	//CLOSE_HASH::TestHashTable();
 	OPEN_HASH::TestHashTable();
+	OPEN_HASH::TestHashTable2();
 
 	return 0;
 }
