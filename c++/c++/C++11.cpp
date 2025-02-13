@@ -3,7 +3,7 @@
 #include<map>
 #include<string>
 #include<list>
-
+#include <algorithm>
 #include<initializer_list>
 using namespace std;
 
@@ -277,7 +277,9 @@ unordered_map/unordered_set :推荐使用，因为他们的效率高于map/set
 //	return 0;
 //}
 
-
+//const T& 既可以引用左值，也可以引用右值；
+//当没有const T&& 函数重载时，右值传入const T&；当有const T&& 函数重载时，右值传入const T&&
+// 
 //template<class T>
 //void func(const T& t)
 //{
@@ -301,49 +303,323 @@ unordered_map/unordered_set :推荐使用，因为他们的效率高于map/set
 //C++11又将右值区分为:纯右值和将亡值
 //纯右值 : 基本类型的常量或者临时对象
 //将亡值 : 自定义类型的临时对象
+//结论:所有深拷贝类(vector/list/map/set.都可以加两个右值引用做参数的移动拷贝和移动赋值
+//现实中不可避免存在传值返回的场景，传值返回的拷贝返回对象的临时对象。
+//如果只有深拷贝，那么代码就很大，实现右值引用的移动拷贝，效率高
+//结论:右值引用本身没太多意义，右值引用的实现了移动构造和移动赋值
+//那么面对接收函数传值返回对象(右值)等等场景，可以提高效率
+//class String
+//{
+//public:
+//	String(const char* str="")
+//	{
+//		_str = new char[strlen(str) + 1];
+//		strcpy(_str, str);
+//	}
+//	String(const String& s)//const左值可以引用右值，但是深拷贝消耗代价太大
+//	{
+//		cout << "String(const String& s) --深拷贝-效率低" << endl;
+//		_str = new char[strlen(s._str) + 1];
+//		strcpy(_str, s._str);
+//	}
+//
+//	//右值-将亡值，没必要进行深拷贝,进行移动拷贝，效率高
+//	String(String&& s):_str(nullptr)
+//	{
+//		cout << "String(const String&& s) --移动拷贝-效率高" << endl;
+//		swap(_str, s._str);
+//	}
+//
+//	//string = 左值
+//	String& operator=(const String& s)
+//	{
+//		cout << "String& operator=(const String& s) --深拷贝赋值-效率低" << endl;
+//
+//		if (this != &s)
+//		{
+//			char* newstr = new char[strlen(s._str) + 1];
+//			strcpy(newstr, s._str);
+//
+//			if (_str)
+//			{
+//				delete[] _str;
+//			}
+//			_str = newstr;
+//		}
+//		return *this;
+//	}
+//
+//	//string = 右值，将亡值
+//	String& operator=(String&& s)
+//	{
+//		swap(_str, s._str);
+//		cout << "String& operator=(String&& s) --移动赋值-效率高" << endl;
+//		return *this;
+//	}
+//
+//	//s1 + s2
+//	String operator+(const String& s)
+//	{
+//		String ret(*this);
+//		//ret.append(s);
+//		return ret;//传值返回的拷贝返回对象的临时对象。返回的是右值。
+//	}
+//
+//	//s1 += s2
+//	String& operator+=(const String& s)
+//	{
+//		//this->append(s);
+//		return *this;//返回的是左值
+//	}
+//	~String()
+//	{
+//		delete[] _str; 
+//	}
+//private:
+//	char* _str;
+//};
+//String fun(const char* str)
+//{
+//	String tmp(str);
+//	return tmp;//这里返回的实际上是tmp拷贝的临时对象，属于右值
+//}
+//int main()
+//{
+//	String s1("hello");
+//	String s2(s1);//参数是左值
+//
+//	//String s3(String("临时对象"));//参数是右值，匿名对象也是临时对象.但是这里编译器会优化掉
+//	String s4(fun("临时对象"));//参数是右值-函数返回值，这里是自定义类型的临时对象，也就是将亡值(传递给你用，用完就析构)
+//
+//	String s5(move(s1));
+//	//move(s1)后，s1变成了空
+//	//当需要用右值引用引用一个左值时，可以通过move函数将左值转化为右值。
+//	//C++11中，std::move()函数位于头文件<utility>中，该函数名字具有迷惑性，
+//	//它并不搬移任何东西，唯一的功能就是将一个左值强制转化为右值引用，然后实现移动语义
+//	cout << endl;
+//
+//	String s6;
+//	s6 = s5;
+//	s6 = move(s2);
+//	cout << endl;
+//
+//	String s7 = s5 + s4;  //移动构造
+//	String s8 = s7 += s4; //拷贝构造
+//	return 0;
+//}
 
-class String
-{
-public:
-	String(const char* str="")
-	{
-		_str = new char[strlen(str) + 1];
-		strcpy(_str, str);
-	}
-	String(const String& s)//const左值可以引用右值，但是深拷贝消耗代价太大
-	{
-		cout << "String(const String& s) --深拷贝-效率低" << endl;
-		_str = new char[strlen(s._str) + 1];
-		strcpy(_str, s._str);
-	}
 
-	//右值-将亡值，没必要进行深拷贝,进行移动拷贝，效率高
-	String(String&& s):_str(nullptr)
-	{
-		cout << "String(const String& s) --移动拷贝-效率高" << endl;
-		swap(_str, s._str);
-	}
+//右值引用去做函数的参数
+/*
+std::vector::push_back
+void push_back(const value _type& val);
+void push_back(value_type&& val);
 
-	~String()
-	{
-		delete[] _str; 
-	}
-private:
-	char* _str;
-};
-String fun(const char* str)
-{
-	String tmp(str);
-	return tmp;//这里返回的实际上是tmp拷贝的临时对象，属于右值
-}
+std::list::push_back
+void push_back(const value_type& val);
+void push_back(value_type&& val);
+
+std::set::insert
+pair<iterator, bool>insert(const value_type& val);
+pair<iterator, bool>insert(value_type&& val);
+
+std::vector::emplace back
+template<class... Args>
+void emplace_back(Args&&... args); // template<class... Args>是模板的可变参数 (了解),可以是一个或多个参数
+网上有人说:emplace版本表push和insert高效。这句话不准确，没有深入去分析。
+
+其他容器的插入数据结构也基本都是两个重载实现，一个左值引用，一个右值引用
+*/
+//int main()
+//{
+//	vector<string> vec;
+//	int val = 123;
+//	string s("左值");
+//
+//	//调用string的拷贝构造，深拷贝
+//	vec.push_back(s);//void push_back(const value _type& val);
+//	
+//	//调用string的移动构造
+//	vec.push_back("右值");//void push_back(value_type&& val);
+//	vec.push_back(to_string(val));//void push_back(value_type&& val);
+//
+//	vec.emplace_back(s);
+//	vec.emplace_back("右值");
+//	vec.emplace_back(move(s));
+//
+//	vector<pair<string, int>> vp;
+//	vp.push_back(make_pair("右值", 20));
+//	//vp.push_back("右值", 20); //push_back不可以传多个参数
+//
+//	vp.emplace_back(make_pair("右值", 20));
+//	vp.emplace_back("右值", 20);//体现emplace_back模板可变参数特点的地方
+//	return 0;
+//}
+/*
+总结
+右值引用做参数和作返回值减少拷贝的本质是利用了移动构造和移动赋值
+左值引用和右值引用本质的作用都是减少拷贝，右值引用本质可以认为是弥补左值引用不足的地方，他们两相辅相成
+
+左值引用:解决的是传参过程中和返回值过程中的拷贝
+做参数:void push(T x)->void push(const T& x) 解决的是传参过程中减少拷贝
+做返回值:T  f2() -> T&  f2()解决的返回值过程中的拷贝
+ps:但是要注意这里有限制，如果返回对象出了作用域不在了就不能用传引用，这个左值引用无法解决，等待C++11右值引用解决
+
+右值引用:解决的是传参后，push/insert函数内部将对象移动到容器空间上的问题 + 传值返回接收返回值的拷贝
+做参数: void push(T&&x) 解决的push内部不再使用拷贝构造x到容器空间上，而是移动构造过去
+做返回值:T (2): 解决的外面调用接收f20)返回对象的拷贝，T ret = f2(),这里就是右值引用的移动构造，减少了拷贝
+*/
+
+
+//完美转发
+
+//void Fun(int& x) { cout << "左值引用" << endl; }
+//void Fun(const int& x) { cout << "const 左值引用" << endl; }
+//void Fun(int&& x) { cout << "右值引用" << endl; }
+//void Fun(const int&& x) { cout << "const 右值引用" << endl; }
+//// 模板中的&&不代表右值引用，而是万能引用，其既能接收左值又能接收右值。
+//// 模板的万能引用只是提供了能够接收同时接收左值引用和右值引用的能力，
+//// 但是引用类型的唯一作用就是限制了接收的类型，后续使用中都退化成了左值，
+//// 我们希望能够在传递过程中保持它的左值或者右值的属性, 就需要完美转发
+////	std::forward<T>(t) 完美转发在传参的过程中保留对象原生类型属性
+//template<typename T>
+//void PerfectForward(T&& t)//万能引用
+//{
+//	//右值引用会在第二次之后的参数传递过程中右值属性丢失,下一层调用会全部识别为左值
+//	//完美转发解决
+//	//Fun(t);
+//	Fun(forward<T>(t));
+//}
+//int main()
+//{
+//	PerfectForward(10); // 右值
+//	int a;
+//	PerfectForward(a); // 左值
+//	PerfectForward(std::move(a)); // 右值
+//	const int b = 8;
+//	PerfectForward(b); // const 左值
+//	PerfectForward(std::move(b)); // const 右值
+//	return 0;
+//}
+
+
+//lambda表达式
+
+//
+//template<class T>
+//struct G1
+//{
+//	bool operator()(const T& x,const T& y)
+//	{
+//		return x > y;
+//	}
+//};
+//
+//bool g2(const int& x, const int& y)
+//{
+//	return x > y;
+//}
+//
+//int main()
+//{
+//	int array[] = { 4,1,8,5,3,7,0,9,2,6 };
+//	// 默认按照小于比较，排出来结果是升序
+//	std::sort(array, array + sizeof(array) / sizeof(array[0]));
+//	// 如果需要降序，需要改变元素的比较规则
+//	std::sort(array, array + sizeof(array) / sizeof(array[0]), greater<int>());
+//
+//	G1<int> g1;
+//	int a = 10, b = 20;
+//	g1(a, b);//g1是一个对象，这里调用的是他的operator()实现的比较,仿函数
+//	g2(a, b);//g2是一个函数指针，这里是调用他指向的函数
+//	//他们是完全不同的对象,但是他们用起来是一样的。
+//	return 0;
+//}
+
+//struct Goods
+//{
+//	string _name; // 名字
+//	double _price; // 价格
+//	int _evaluate; // 评价
+//	Goods(const char* str, double price, int evaluate)
+//		:_name(str)
+//		, _price(price)
+//		, _evaluate(evaluate)
+//	{
+//	}
+//};
+//struct ComparePriceLess
+//{
+//	bool operator()(const Goods& gl, const Goods& gr)
+//	{
+//		return gl._price < gr._price; 			
+//	}
+//};
+//struct ComparePriceGreater
+//{
+//	bool operator()(const Goods& gl, const Goods& gr)
+//	{
+//		return gl._price > gr._price;
+//	}
+//};
+///*
+//随着C++语法的发展，人们开始觉得上面的写法太复杂了，每次为了实现一个algorithm算法，
+//都要重新去写一个类，如果每次比较的逻辑不一样，还要去实现多个类，特别是相同类的命名，
+//这些都给编程者带来了极大的不便。因此，在C++11语法中出现了Lambda表达式。
+//*/
+//int main()
+//{
+//	vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2,3 }, { "菠萝", 1.5, 4 } };
+//	sort(v.begin(), v.end(), ComparePriceLess());
+//	sort(v.begin(), v.end(), ComparePriceGreater());
+//
+//	return 0;
+//}
+
+/*
+lambda表达式
+lambda表达式语法
+lambda表达式书写格式：[capture-list] (parameters) mutable -> return-type { statement }
+
+lambda表达式各部分说明
+	[capture-list] : 捕捉列表，该列表总是出现在lambda函数的开始位置，
+	编译器根据[]来判断接下来的代码是否为lambda函数，捕捉列表能够捕捉上下文中的变量供lambda函数使用。
+
+	(parameters)：参数列表。与普通函数的参数列表一致，如果不需要参数传递，则可以连同()一起省略
+
+	mutable：默认情况下，lambda函数总是一个const函数，
+	mutable可以取消其常量性。使用该修饰符时，参数列表不可省略(即使参数为空)。
+
+	->return type：返回值类型。用追踪返回类型形式声明函数的返回值类型，
+	没有返回值时此部分可省略。返回值类型明确情况下，也可省略，由编译器对返回类型进行推导。
+	
+	{statement}：函数体。在该函数体内，除了可以使用其参数外，还可以使用所有捕获到的变量。
+注意：
+在lambda函数定义中，参数列表和返回值类型都是可选部分，而捕捉列表和函数体可以为空。
+因此C++11中最简单的lambda函数为：[]{}; 该lambda函数不能做任何事情。
+*/
 int main()
 {
-	String s1("hello");
-	String s2(s1);//参数是左值
+	// 最简单的lambda表达式, 该lambda表达式没有任何意义
+	//没有参数，没有返回值
+	[] {};
 
-	//String s3(String("临时对象"));//参数是右值，匿名对象也是临时对象.但是这里编译器会优化掉
-	String s4(fun("临时对象"));//参数是右值-函数返回值，这里是自定义类型的临时对象，也就是将亡值(传递给你用，用完就析构)
+	// 省略参数列表和返回值类型，返回值类型由编译器推导为int
+	int a = 3, b = 4;
+	[=] {return a + 3; };
 
+	// 省略了返回值类型，无返回值类型
+	auto fun1 = [&](int c) {b = a + c; };
+	fun1(10);
+	cout << a << " " << b << endl;
 
+	// 各部分都很完善的lambda函数
+	auto fun2 = [=, &b](int c)->int {return b += a + c; };
+	cout << fun2(10) << endl;
+
+	// 复制捕捉x
+	int x = 10;
+	auto add_x = [x](int a) mutable { x *= 2; return a + x; };
+	cout << add_x(10) << endl;
 	return 0;
 }
