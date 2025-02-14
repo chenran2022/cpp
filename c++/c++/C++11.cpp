@@ -598,28 +598,215 @@ lambda表达式各部分说明
 在lambda函数定义中，参数列表和返回值类型都是可选部分，而捕捉列表和函数体可以为空。
 因此C++11中最简单的lambda函数为：[]{}; 该lambda函数不能做任何事情。
 */
+//int main()
+//{
+//	// 最简单的lambda表达式, 该lambda表达式没有任何意义
+//	//没有参数，没有返回值
+//	[] {};
+//
+//	// 省略参数列表和返回值类型，返回值类型由编译器推导为int
+//	int a = 3, b = 4;
+//	auto fun = [](int x1, int x2) {return x1 + x2; };//返回值类型由编译器推导为int
+//	[=] {return a + 3; };
+//	cout << fun(a, b) << endl;
+//
+//	// 省略了返回值类型，无返回值类型
+//	auto fun1 = [&](int c) {b = a + c; };
+//	fun1(10);
+//	cout << a << " " << b << endl;
+//
+//	//捕捉列表就是捕捉跟我一个作用域的对象
+//	//传值捕捉[a]捕捉a		[a, b]捕捉a和b		[=]捕捉同一作用域中的所有对象
+//	//传引用捕捉[&a]捕捉a	[&a, &b]捕捉a和b	[&]捕捉同一作用域中的所有对象
+//	//[&]：表示引用传递捕捉所有父作用域中的变量(包括this)
+//	//[this]：表示值传递方式捕捉当前的this指针
+//	//传值捕捉其实是对它进行拷贝，而且传值捕捉的对象是不能被修改的，加上mutable就可以修改，但修改的是拷贝值，不是本身
+//	auto f1 = [a, b]()->int {return a + b; };
+//	auto f2 = [=]()->int {return a + b; };
+//	cout << f1() <<"  "<< f2() << endl;//没有参数，就不能传参
+//	//实现a和b的交换
+//	auto swap1 = [](int& x, int& y) {int tmp = x; x = y; y = tmp; };
+//	swap1(a, b);
+//	cout << a << " " << b << endl;
+//	/*不正确的写法：
+//	auto swap=[a,b]() mutable {int tmp = a; a = b; b = tmp; };
+//	swap();//并不会改变真正的a，b值；这里改变的只是传值的拷贝值
+//	cout << a << " " << b << endl;*/
+//	auto swap2 = [&a, &b]() {int tmp = a; a = b; b = tmp; };
+//	swap2();
+//	cout << a << " " << b << endl;
+//
+//	// 各部分都很完善的lambda函数
+//	auto fun2 = [=, &b](int c)->int {return b += a + c; };
+//	cout << fun2(10) << endl;
+//
+//	// 复制捕捉x
+//	int x = 10;
+//	auto add_x = [x](int a) mutable { x *= 2; return a + x; };
+//	cout << add_x(10) << endl;
+//
+//	/*
+//	注意点：
+//	a.父作用域指包含lambda函数的语句块
+//	b. 语法上捕捉列表可由多个捕捉项组成，并以逗号分割。
+//		比如：[=, &a, &b]：以引用传递的方式捕捉变量a和b，值传递方式捕捉其他所有变量
+//		[&，a, this]：值传递方式捕捉变量a和this，引用方式捕捉其他变量
+//	c. 捕捉列表不允许变量重复传递，否则就会导致编译错误。
+//		比如：[=, a]：=已经以值传递方式捕捉了所有变量，捕捉a重复
+//	d. 在块作用域以外的lambda函数捕捉列表必须为空。
+//	e. 在块作用域中的lambda函数仅能捕捉父作用域中局部变量，捕捉任何非此作用域或者非局部变量都会导致编译报错。
+//	f. lambda表达式之间不能相互赋值，即使看起来类型相同
+//	*/
+//
+//	return 0;
+//}
+
+
+//lambda表达式使用场景：与仿函数进行区分，哪个使用方便就使用哪个
+//struct Goods
+//{
+//	string _name; // 名字
+//	double _price; // 价格
+//	int _evaluate; // 评价
+//	Goods(const char* str, double price, int evaluate)
+//		:_name(str)
+//		, _price(price)
+//		, _evaluate(evaluate)
+//	{
+//	}
+//};
+//int main()
+//{
+//	vector<Goods> v = { { "苹果", 2.1, 5 }, { "香蕉", 3, 4 }, { "橙子", 2.2,3 }, { "菠萝", 1.5, 4 } };
+//	/*auto ComparePriceLess = [](const Goods& g1, const Goods& g2)->bool {
+//		return g1._price < g2._price;
+//		};
+//	sort(v.begin(), v.end(), ComparePriceLess);*/
+//	//一般直接把lambda表达式写在里面，不用再定义对象
+//	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)->bool {
+//		return g1._price < g2._price; });
+//
+//	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)->bool {
+//		return g1._price > g2._price; });
+//	
+//	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)->bool {
+//		return g1._name > g2._name; });	
+//	
+//	sort(v.begin(), v.end(), [](const Goods& g1, const Goods& g2)->bool {
+//		return g1._name <  g2._name; });
+//	//sort函数既可以使用仿函数，也可以使用lambda表达式，是因为sort函数的第三个参数是一个模板
+//	return 0;
+//}
+
+
+//lambda表达式原理
+//int main()
+//{
+//	int a = 1, b = 2;
+//	//  对象 =  对象(替换编译器生成的lambda_uuid仿函数的对象)
+//	auto add = [](int x, int y)->int {return x + y; };
+//	add(a, b);//call lambda_uuid仿函数的operator()
+//	//底层还是依靠仿函数来实现，也就是说你定义了一个1ambda表达式，
+//	//实际上编译器会全局域生成一个叫lambda_uuid类，仿函数的operator()的参数和实现
+//	//每个lambda表达式的uuid都不一样
+//
+//	return 0;
+//}
+
+
+
+/*
+windows 自己的一套API		如 : CreateThread
+Linux 使用posix的pthread	如 : pthread_create
+C++98中，如果你想写多线程的程序，即可以在Windows下跑，也可以在Linux，那么怎么办 ?
+用条件编译
+	#ifdef WIN32
+		CreateThread(...)
+	else
+		pthread_create(...)
+	#endif
+
+C++11 线程库
+特点 : 跨平台、面向对象封装的类(每个线程是一个类对象)
+实现原理 : 封装库时使用了条件编译，也就是说他的底层还是分别调用了不同平台的线程API
+
+扩展:吐槽一下C++，C++缺点之一:就是更新有用的东西太慢了，比如线程库C++11(2011)才更新的,
+而且到现在也没有更新一个官方的封装好的靠谱网络库。其次一些不痛不痒的语法更新了一堆，增加学习成本
+*/
+#include<thread>
+#include<mutex>
+#include<atomic>
+
+int x = 0;
+mutex mu;
+void Add(int n)
+{
+	//C++98，使用互斥锁后，多个进程不会同时执行，只能一个线程执行
+	mu.lock();
+	for (int i = 0; i < n; ++i)
+		++x;
+	mu.unlock();
+}
+
+atomic<int> num = 0;//C++11中，支持整形/浮点数的原子++、--操作，atomic支持CAS无锁编程，不用使用互斥锁
+struct Add2
+{
+	void operator()(size_t n)
+	{
+		for (int i = 0; i < n; ++i)
+			++num;
+	}
+};
 int main()
 {
-	// 最简单的lambda表达式, 该lambda表达式没有任何意义
-	//没有参数，没有返回值
-	[] {};
+	thread t1(Add,10000);//1.对象(函数指针)+参数
+	thread t2(Add,10000);
 
-	// 省略参数列表和返回值类型，返回值类型由编译器推导为int
-	int a = 3, b = 4;
-	[=] {return a + 3; };
+	Add2 add2;
+	thread t3(add2, 10000);//2.对象(仿函数对象)+参数
+	thread t4(Add2(), 10000);
 
-	// 省略了返回值类型，无返回值类型
-	auto fun1 = [&](int c) {b = a + c; };
-	fun1(10);
-	cout << a << " " << b << endl;
+	atomic<int> m = 0; //局部变量
+	auto add3 = [&m](int n) {
+		for (int i = 0; i < n; ++i)
+			++m;
+		};
+	thread t5(add3, 10000);//3.对象(lambda表达式对象)+参数
+	thread t6(add3, 10000);
 
-	// 各部分都很完善的lambda函数
-	auto fun2 = [=, &b](int c)->int {return b += a + c; };
-	cout << fun2(10) << endl;
+	cout << t3.get_id() << endl;
+	cout << t4.get_id() << endl;
 
-	// 复制捕捉x
-	int x = 10;
-	auto add_x = [x](int a) mutable { x *= 2; return a + x; };
-	cout << add_x(10) << endl;
+	//mul多个线程对num_x加n次
+	int mul = 4;
+	atomic<int> num_x = 0;
+	int n = 100000;
+	vector<thread> v_thread;
+	for (int i = 0; i < mul; ++i)
+	{
+		//注意的是thread支持移动赋值和移动拷贝，不支持深拷贝的拷贝构造和拷贝赋值
+		//这里是将亡值，右值；不支持左值
+		v_thread.push_back(thread([&num_x](int count) {
+			for (int i = 0; i < count; ++i)
+				++num_x;
+			}, n));
+	}
+	for (auto& au : v_thread)
+	{
+		cout << au.get_id() << endl;
+		au.join();
+	}
+	cout << num_x << endl;
+
+	t1.join();//main主线程等待线程t1结束
+	t2.join();
+	t3.join();
+	t4.join();
+	t5.join();
+	t6.join();
+
+	cout << x << endl;
+	cout << num << endl;
+	cout << m << endl;
 	return 0;
 }
