@@ -737,76 +737,160 @@ C++11 线程库
 #include<mutex>
 #include<atomic>
 
-int x = 0;
-mutex mu;
-void Add(int n)
-{
-	//C++98，使用互斥锁后，多个进程不会同时执行，只能一个线程执行
-	mu.lock();
-	for (int i = 0; i < n; ++i)
-		++x;
-	mu.unlock();
-}
+//int x = 0;
+//mutex mu;
+//void Add(int n)
+//{
+//	//C++98，使用互斥锁后，多个进程不会同时执行，只能一个线程执行
+//	mu.lock();
+//	for (int i = 0; i < n; ++i)
+//		++x;
+//	mu.unlock();
+//}
+//
+//atomic<int> num = 0;//C++11中，支持整形/浮点数的原子++、--操作，atomic支持CAS无锁编程，不用使用互斥锁
+//struct Add2
+//{
+//	void operator()(size_t n)
+//	{
+//		for (int i = 0; i < n; ++i)
+//			++num;
+//	}
+//};
+//int main()
+//{
+//	thread t1(Add,10000);//1.对象(函数指针)+参数
+//	thread t2(Add,10000);
+//
+//	Add2 add2;
+//	thread t3(add2, 10000);//2.对象(仿函数对象)+参数
+//	thread t4(Add2(), 10000);
+//
+//	atomic<int> m = 0; //局部变量
+//	auto add3 = [&m](int n) {
+//		for (int i = 0; i < n; ++i)
+//			++m;
+//		};
+//	thread t5(add3, 10000);//3.对象(lambda表达式对象)+参数
+//	thread t6(add3, 10000);
+//
+//	cout << t3.get_id() << endl;
+//	cout << t4.get_id() << endl;
+//
+//	//mul多个线程对num_x加n次
+//	int mul = 4;
+//	atomic<int> num_x = 0;
+//	int n = 100000;
+//	vector<thread> v_thread;
+//	for (int i = 0; i < mul; ++i)
+//	{
+//		//注意的是thread支持移动赋值和移动拷贝，不支持深拷贝的拷贝构造和拷贝赋值
+//		//这里是将亡值，右值；不支持左值
+//		v_thread.push_back(thread([&num_x](int count) {
+//			for (int i = 0; i < count; ++i)
+//				++num_x;
+//			}, n));
+//	}
+//	for (auto& au : v_thread)
+//	{
+//		cout << au.get_id() << endl;
+//		au.join();
+//	}
+//	cout << num_x << endl;
+//
+//	t1.join();//main主线程等待线程t1结束
+//	t2.join();
+//	t3.join();
+//	t4.join();
+//	t5.join();
+//	t6.join();
+//
+//	cout << x << endl;
+//	cout << num << endl;
+//	cout << m << endl;
+//	return 0;
+//}
 
-atomic<int> num = 0;//C++11中，支持整形/浮点数的原子++、--操作，atomic支持CAS无锁编程，不用使用互斥锁
-struct Add2
-{
-	void operator()(size_t n)
-	{
-		for (int i = 0; i < n; ++i)
-			++num;
-	}
-};
+
+#include<condition_variable> //条件变量
+//使用两个线程，一个打印奇数，一个打印偶数；依次打印
+
 int main()
 {
-	thread t1(Add,10000);//1.对象(函数指针)+参数
-	thread t2(Add,10000);
+	int n = 10000;
 
-	Add2 add2;
-	thread t3(add2, 10000);//2.对象(仿函数对象)+参数
-	thread t4(Add2(), 10000);
+	//终端输出冲突，不能依次打印
+	/*thread t1([&n]() {
+		int i = 0;
+		for (; i < n; ++i)
+			if (i % 2)
+				cout << this_thread::get_id() << " : " << i << endl;
+		});
 
-	atomic<int> m = 0; //局部变量
-	auto add3 = [&m](int n) {
-		for (int i = 0; i < n; ++i)
-			++m;
-		};
-	thread t5(add3, 10000);//3.对象(lambda表达式对象)+参数
-	thread t6(add3, 10000);
+	thread t2([&n]() {
+		int i = 0;
+		for (; i < n; ++i)
+			if (i % 2==0)
+				cout << this_thread::get_id() << " : " << i << endl;
+		});*/
 
-	cout << t3.get_id() << endl;
-	cout << t4.get_id() << endl;
+	mutex mt1, mt2;
+	condition_variable cv1, cv2;
 
-	//mul多个线程对num_x加n次
-	int mul = 4;
-	atomic<int> num_x = 0;
-	int n = 100000;
-	vector<thread> v_thread;
-	for (int i = 0; i < mul; ++i)
-	{
-		//注意的是thread支持移动赋值和移动拷贝，不支持深拷贝的拷贝构造和拷贝赋值
-		//这里是将亡值，右值；不支持左值
-		v_thread.push_back(thread([&num_x](int count) {
-			for (int i = 0; i < count; ++i)
-				++num_x;
-			}, n));
-	}
-	for (auto& au : v_thread)
-	{
-		cout << au.get_id() << endl;
-		au.join();
-	}
-	cout << num_x << endl;
 
-	t1.join();//main主线程等待线程t1结束
+	//thread t1([&]() {
+	//	int i = 0;
+	//	for (; i < n; ++i)
+	//	{
+	//		if (i != 0)
+	//		{
+	//			cv1.wait(unique_lock<mutex>(mt1)); //如果两个线程同时等待，会造成死锁
+	//		}
+	//		if (i % 2)
+	//		{
+	//			cout << this_thread::get_id() << " : " << i << endl;
+	//		}			
+	//		cv2.notify_one();//通知cv1执行
+	//	}
+	//	});
+
+	//thread t2([&]() {
+	//	int i = 0;
+	//	for (; i < n; ++i)
+	//	{
+	//		cv2.wait(unique_lock<mutex>(mt2));
+	//		if (i % 2 == 0)
+	//		{
+	//			cout << this_thread::get_id() << " : " << i << endl;
+	//		}
+	//		cv1.notify_one();//通知cv1执行
+	//	}
+	//	});
+
+	mutex mtx;
+	condition_variable cv;
+	bool t2_turn = true; // 初始由t2先打印偶数
+
+	thread t1([&]() {
+		for (int i = 1; i < n; i += 2) {
+			unique_lock<mutex> lock(mtx);
+			cv.wait(lock, [&] { return !t2_turn; });
+			cout << this_thread::get_id() << " : " << i << endl;
+			t2_turn = true;
+			cv.notify_one();
+		}
+		});
+
+	thread t2([&]() {
+		for (int i = 0; i < n; i += 2) {
+			unique_lock<mutex> lock(mtx);
+			cv.wait(lock, [&] { return t2_turn; });
+			cout << this_thread::get_id() << " : " << i << endl;
+			t2_turn = false;
+			cv.notify_one();
+		}
+		});
+	t1.join();
 	t2.join();
-	t3.join();
-	t4.join();
-	t5.join();
-	t6.join();
-
-	cout << x << endl;
-	cout << num << endl;
-	cout << m << endl;
 	return 0;
 }
